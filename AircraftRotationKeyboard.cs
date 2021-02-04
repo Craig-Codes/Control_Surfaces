@@ -62,9 +62,9 @@ public class AircraftRotationKeyboard : MonoBehaviour
     {
         sliderValue = uiSlider.value;
         // Get all of the control surfaces relevant angles
-        rudderInspectorFloat = KeyboardRotationHelperMethods.WrapAngle(rudder.transform.localEulerAngles.z);
-        aileronInspectorFloat = KeyboardRotationHelperMethods.WrapAngle(rightAileron.transform.localEulerAngles.y);
-        elevatorInspectorFloat = KeyboardRotationHelperMethods.WrapAngle(rightElevator.transform.localEulerAngles.y);
+        rudderInspectorFloat = RotationHelperMethods.WrapAngle(rudder.transform.localEulerAngles.z);
+        aileronInspectorFloat = RotationHelperMethods.WrapAngle(rightAileron.transform.localEulerAngles.y);
+        elevatorInspectorFloat = RotationHelperMethods.WrapAngle(rightElevator.transform.localEulerAngles.y);
         // Get all of the surface relevant locations
         float roll = aileronInspectorFloat;  // ailerons (x axis)
         float pitch = elevatorInspectorFloat;  // elevators (y axis)

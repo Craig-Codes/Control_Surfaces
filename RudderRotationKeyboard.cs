@@ -4,87 +4,80 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 public class RudderRotationKeyboard : MonoBehaviour, IPointerDownHandler, IPointerUpHandler   // Intefaces to interact with the Unity event system
 {
-    GameObject rudder;
-    Button leftPedal;
-    Button rightPedal;
+    private GameObject rudder;
+    private Button leftPedal;
+    private Button rightPedal;
+
+    private InputType currentInput;
 
     private float SPEED = 100f;
-    private float KEYBOARD_DEGRESS = 12f;  // change this is a much smaller amount for other input types to allow some sensitivity - 10f is 20 degrees approx
-    private float TOPCLAMP = 10f;  // inspector angle at top end of rotation
-    private float BOTTOMCLAMP = -10f;  // inspector angle at bottom end of rotation
+    private float KEYBOARD_DEGRESS = 8f;  // change this is a much smaller amount for other input types to allow some sensitivity - 10f is 20 degrees approx
+    private float MOUSE_DEGREES = 24f;  // degrees to move the rudder on mouse click - half of those to keyboard as rudder will always be in the middle on mouse click,
 
-    float inspectorFloat;
+    private PlayerControls controls;
 
+    private enum InputType  // enum used to potentially expand out class for HOTAS / gamepad
+    {
+        keyboard,
+        mouse,
+        none
+    }
+
+    void Awake()
+    {
+        controls = new PlayerControls();
+        controls.KeyboardInput.RudderLeftDown.performed += context => LeftPedalDownKeyboard();// context cant be used to get input information
+        controls.KeyboardInput.RudderLeftUp.performed += context => LeftPedalUpKeyboard();  // context cant be used to get input information
+        controls.KeyboardInput.RudderRightDown.performed += context => RightPedalDownKeyboard();  // context cant be used to get input information
+        controls.KeyboardInput.RudderRightUp.performed += context => RightPedalUpKeyboard();  // context cant be used to get input information
+
+    }
     void Start()
     {
         rudder = GameObject.Find("RudderPivot");
         leftPedal = GameObject.Find("L_Pedal").GetComponent<Button>();
-        leftPedal.onClick.AddListener(LeftPedalActionsDown);
         rightPedal = GameObject.Find("R_Pedal").GetComponent<Button>();
-        rightPedal.onClick.AddListener(RightPedalActionsDown);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-        if (Input.GetKeyDown(KeyCode.A)) // When key pressed down
-        {
-            LeftPedalActionsDown();
-        }
-
-        if (Input.GetKeyUp(KeyCode.A)) // when key is released
-        {
-            LeftPedalActionsUp();
-        }
-
-        if (Input.GetKeyDown(KeyCode.D)) // use GetKey to get constant press, KeyDown only gets once, much better for keyboard
-        {
-            RightPedalActionsDown();  
-        }
-
-        if (Input.GetKeyUp(KeyCode.D)) 
-        {
-            RightPedalActionsUp();
-        }
+        currentInput = InputType.none;
+        controls.KeyboardInput.Enable();  // Start with the keyboard controls enabled
+        //pedalPressedMouse = false;
     }
 
 
-
-    public void RightPedalActionsDown()  
-    {
-        PedalDown(rightPedal);
-        MoveSurface("left");
-    }
-
-    public void RightPedalActionsUp()  // return rudder back to center
-    {
-        PedalUp(rightPedal);
-        MoveSurface("right");
-    }
-
-    public void LeftPedalActionsDown()
+    private void LeftPedalDown()
     {
         PedalDown(leftPedal);
-        MoveSurface("right");
+        MoveSurface("right", KEYBOARD_DEGRESS);
     }
 
-    public void LeftPedalActionsUp()  // return rudder back to center
+    private void LeftPedalUp()
     {
         PedalUp(leftPedal);
-        MoveSurface("left");
+        MoveSurface("left", KEYBOARD_DEGRESS);
+    }
+
+    private void RightPedalDown()
+    {
+        PedalDown(rightPedal);
+        MoveSurface("left", KEYBOARD_DEGRESS);
+    }
+
+    private void RightPedalUp()
+    {
+        PedalUp(rightPedal);
+        MoveSurface("right", KEYBOARD_DEGRESS);
     }
 
 
-    public void PedalDown(Button pedal)
+    private void PedalDown(Button pedal)
     {
         pedal.transform.localScale = new Vector3(0.90f, 0.90f, 0.90f); // make pedal smaller to visualise foot press
     }
 
-    public void PedalUp(Button pedal)
+    private void PedalUp(Button pedal)
     {
         pedal.transform.localScale = new Vector3(1f, 1f, 1f);
 
@@ -100,114 +93,103 @@ public class RudderRotationKeyboard : MonoBehaviour, IPointerDownHandler, IPoint
     // Buttons must also have the script attatched
     public void OnPointerDown(PointerEventData eventData)
     {
-        Debug.Log(eventData.selectedObject);
-        if (eventData.selectedObject.name == "L_Pedal")
-        {
-            Debug.Log("YAY! LEFT");
-            LeftPedalActionsDown();
+        if(currentInput == InputType.none || currentInput == InputType.mouse)
+        { // If currentInput is keyboard, do nothing
+
+            if (eventData.selectedObject.name == "L_Pedal")
+            {
+                InputSystem.DisableDevice(Keyboard.current);
+                currentInput = InputType.mouse;
+                PedalDown(leftPedal);
+                MoveSurface("right", MOUSE_DEGREES);
+            }
+            if (eventData.selectedObject.name == "R_Pedal")
+            {
+                InputSystem.DisableDevice(Keyboard.current);
+                currentInput = InputType.mouse;
+                PedalDown(rightPedal);
+                MoveSurface("left", MOUSE_DEGREES);
+            }
         }
-        if (eventData.selectedObject.name == "R_Pedal")
-        {
-            Debug.Log("YAY! RIGHT");
-            RightPedalActionsDown();
-        }
+
     }
+
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        Debug.Log("UP");
-        if (eventData.selectedObject.name == "L_Pedal")
+        if (currentInput == InputType.mouse)
         {
-            LeftPedalActionsUp();
-        }
-        if (eventData.selectedObject.name == "R_Pedal")
-        {
-            RightPedalActionsUp();
-        }
+            if (eventData.selectedObject.name == "L_Pedal")
+            {
+                PedalUp(leftPedal);
+                MoveSurface("left", MOUSE_DEGREES);
+                currentInput = InputType.none;
+                InputSystem.EnableDevice(Keyboard.current);
+            }
+            if (eventData.selectedObject.name == "R_Pedal")
+            {
+                PedalUp(rightPedal);
+                MoveSurface("right", MOUSE_DEGREES);
+                currentInput = InputType.none;
+                InputSystem.EnableDevice(Keyboard.current);
+            }
+        }    
     }
 
-    private void MoveSurface(string direction)
+    private void MoveSurface(string direction, float degrees)
     {
         if (direction == "left")
         {
-            if (inspectorFloat < TOPCLAMP)
-            {
-                Quaternion rotation = Quaternion.Euler(0f, 0f, KEYBOARD_DEGRESS);
-                KeyboardRotationHelperMethods.RotateSurface(rudder, rotation, SPEED);
-            }
+                Quaternion rotation = Quaternion.Euler(0f, 0f, degrees);
+                RotationHelperMethods.RotateSurface(rudder, rotation, SPEED);
         }
         else if (direction == "right")
         {
-            if (inspectorFloat > BOTTOMCLAMP)
-            {
-                Quaternion rotation = Quaternion.Euler(0f, 0f, -KEYBOARD_DEGRESS);
-                KeyboardRotationHelperMethods.RotateSurface(rudder, rotation, SPEED);
-            }
+                Quaternion rotation = Quaternion.Euler(0f, 0f, -degrees);
+                RotationHelperMethods.RotateSurface(rudder, rotation, SPEED);
         }
 
     }
+
+    private void LeftPedalDownKeyboard()
+    {
+        if (currentInput == InputType.none || currentInput == InputType.keyboard)
+        {
+            currentInput = InputType.keyboard;
+            LeftPedalDown();
+        }
+    }
+
+    private void LeftPedalUpKeyboard()
+    {
+        if (currentInput == InputType.none || currentInput == InputType.keyboard)
+        {
+            LeftPedalUp();
+            currentInput = InputType.none;
+        }
+    }
+
+    private void RightPedalDownKeyboard()
+    {
+        if (currentInput == InputType.none || currentInput == InputType.keyboard)
+        {
+            currentInput = InputType.keyboard;
+            RightPedalDown();
+        }
+    }
+
+    private void RightPedalUpKeyboard()
+    {
+        if (currentInput == InputType.none || currentInput == InputType.keyboard)
+        {
+            RightPedalUp();
+            currentInput = InputType.none;
+        }
+    }
+
+
 }
 
-//void Update()
-//{
-//    if (Input.GetKeyDown(KeyCode.Keypad2) || Input.GetKeyDown(KeyCode.Alpha2)) // use GetKey to get constant press, KeyDown only gets once, much better for keyboard
-//    {
-//        MoveSurface("up");  // Move the surface
-//                            // Get changed angle of the control surface
-//        inspectorFloat = KeyboardRotationHelperMethods.WrapAngle(rightElevator.transform.localEulerAngles.y);  // wrap the y angle to stop it going over 180 or bellow -180
-//        surfacePosition = KeyboardRotationHelperMethods.GetSurfacePosition(inspectorFloat);  // Update the surface position varaible
-//        KeyboardRotationHelperMethods.ManualJoystickMove();  // move the joystick based on surface position for both ailerons and elevators
-//    }
-//    if (Input.GetKeyUp(KeyCode.Keypad2) || Input.GetKeyUp(KeyCode.Alpha2)) // use GetKey to get constant press, KeyDown only gets once, much better for keyboard
-//    {
-//        MoveSurface("down");  // Move the surface
-//                              // Get changed angle of the control surface
-//        inspectorFloat = KeyboardRotationHelperMethods.WrapAngle(rightElevator.transform.localEulerAngles.y);  // wrap the y angle to stop it going over 180 or bellow -180
-//        surfacePosition = KeyboardRotationHelperMethods.GetSurfacePosition(inspectorFloat);  // Update the surface position varaible
-//        KeyboardRotationHelperMethods.ManualJoystickMove();  // move the joystick based on surface position for both ailerons and elevators
-//    }
-
-//    if (Input.GetKeyDown(KeyCode.Keypad8) || Input.GetKeyDown(KeyCode.Alpha8)) // use GetKey to get constant press, KeyDown only gets once, much better for keyboard
-//    {
-//        MoveSurface("down");
-//        // Get changed angle of the control surface
-//        inspectorFloat = KeyboardRotationHelperMethods.WrapAngle(rightElevator.transform.localEulerAngles.y);
-//        surfacePosition = KeyboardRotationHelperMethods.GetSurfacePosition(inspectorFloat);  // Update the surface position varaible
-//        KeyboardRotationHelperMethods.ManualJoystickMove();  // move the joystick based on surface position for both ailerons and elevators
-//    }
-//    if (Input.GetKeyUp(KeyCode.Keypad8) || Input.GetKeyUp(KeyCode.Alpha8)) // use GetKey to get constant press, KeyDown only gets once, much better for keyboard
-//    {
-//        MoveSurface("up");
-//        // Get changed angle of the control surface
-//        inspectorFloat = KeyboardRotationHelperMethods.WrapAngle(rightElevator.transform.localEulerAngles.y);
-//        surfacePosition = KeyboardRotationHelperMethods.GetSurfacePosition(inspectorFloat);  // Update the surface position varaible
-//        KeyboardRotationHelperMethods.ManualJoystickMove();  // move the joystick based on surface position for both ailerons and elevators
-//    }
-
-//}
-
-//private void MoveSurface(string direction)
-//{
-//    if (direction == "up")
-//    {
-//        if (inspectorFloat < TOPCLAMP)
-//        {
-//            Quaternion rotation = Quaternion.Euler(0f, KEYBOARD_DEGRESS, 0f);
-//            KeyboardRotationHelperMethods.RotateSurface(rightElevator, rotation, SPEED);
-//            KeyboardRotationHelperMethods.RotateSurface(leftElevator, rotation, SPEED);
-//        }
-//    }
-//    else if (direction == "down")
-//    {
-//        if (inspectorFloat > BOTTOMCLAMP)
-//        {
-//            Quaternion rotation = Quaternion.Euler(0f, -KEYBOARD_DEGRESS, 0f);
-//            KeyboardRotationHelperMethods.RotateSurface(rightElevator, rotation, SPEED);
-//            KeyboardRotationHelperMethods.RotateSurface(leftElevator, rotation, SPEED);
-//        }
-//    }
-
-//}
 
 
 

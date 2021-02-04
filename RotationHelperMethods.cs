@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class KeyboardRotationHelperMethods : MonoBehaviour
+public class RotationHelperMethods : MonoBehaviour
 {
     private static float smoothing = 5f; // The smoothing applied to the movement of control surfaces.
     public static void RotateSurface(GameObject surface, Quaternion rotation, float speed)
@@ -20,6 +20,7 @@ public class KeyboardRotationHelperMethods : MonoBehaviour
         up,
         down
     }
+
 
     public static Position GetSurfacePosition(float location)
     {

@@ -3,65 +3,74 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;  // Gives access to UI methods
+using UnityEngine.InputSystem;
 
 public class ElevatorsRotateKeyboard : MonoBehaviour
 {
-    GameObject leftElevator;
-    GameObject rightElevator;
+    private GameObject leftElevator;
+    private GameObject rightElevator;
 
     private float SPEED = 100f;
     private float KEYBOARD_DEGRESS = 25f;  // change this is a much smaller amount for other input types to allow some sensitivity
     private Vector3 inspectorAngle;
     private float TOPCLAMP = 20f;  // inspector angle at top end of rotation
     private float BOTTOMCLAMP = -20f;  // inspector angle at bottom end of rotation
-    float inspectorFloat;
+    private float inspectorFloat;
 
-    public static KeyboardRotationHelperMethods.Position surfacePosition = KeyboardRotationHelperMethods.Position.neutral;  // Static so it always holds a value
 
-    void Start()
+    public static RotationHelperMethods.Position surfacePosition;  // public static so that Joystick movement scripts can access this variable
+
+    private PlayerControls controls;
+
+    private void Awake()
+    {
+        controls = new PlayerControls();
+        controls.KeyboardInput.ElevatorsUp.performed += context => ElevatorsUp();  // context cant be used to get input information
+        controls.KeyboardInput.ElevatorsDown.performed += context => ElevatorsDown();  // context cant be used to get input information
+        controls.KeyboardInput.ElevatorsUpReverse.performed += context => ElevatorsUpReverse();  // context cant be used to get input information
+        controls.KeyboardInput.ElevatorsDownReverse.performed += context => ElevatorsDownReverse();  // context cant be used to get input information
+
+    }
+   private void Start()  
     {
         leftElevator = GameObject.Find("LeftElevator");
         rightElevator = GameObject.Find("RightElevator");
+        surfacePosition = RotationHelperMethods.Position.neutral;
+        controls.KeyboardInput.Enable();  // Start with the keyboard controls enabled
     }
 
-    // Update is called once per frame
-    void Update()
+    private void ElevatorsUp()
     {
-        if (Input.GetKeyDown(KeyCode.Keypad2) || Input.GetKeyDown(KeyCode.Alpha2)) // use GetKey to get constant press, KeyDown only gets once, much better for keyboard
-        {
-            MoveSurface("up");  // Move the surface
-            // Get changed angle of the control surface
-            inspectorFloat = KeyboardRotationHelperMethods.WrapAngle(rightElevator.transform.localEulerAngles.y);  // wrap the y angle to stop it going over 180 or bellow -180
-            surfacePosition = KeyboardRotationHelperMethods.GetSurfacePosition(inspectorFloat);  // Update the surface position varaible
-            KeyboardRotationHelperMethods.ManualJoystickMove();  // move the joystick based on surface position for both ailerons and elevators
-        }
-        if (Input.GetKeyUp(KeyCode.Keypad2) || Input.GetKeyUp(KeyCode.Alpha2)) // use GetKey to get constant press, KeyDown only gets once, much better for keyboard
-        {
-            MoveSurface("down");  // Move the surface
-            // Get changed angle of the control surface
-            inspectorFloat = KeyboardRotationHelperMethods.WrapAngle(rightElevator.transform.localEulerAngles.y);  // wrap the y angle to stop it going over 180 or bellow -180
-            surfacePosition = KeyboardRotationHelperMethods.GetSurfacePosition(inspectorFloat);  // Update the surface position varaible
-            KeyboardRotationHelperMethods.ManualJoystickMove();  // move the joystick based on surface position for both ailerons and elevators
-        }
-
-        if (Input.GetKeyDown(KeyCode.Keypad8) || Input.GetKeyDown(KeyCode.Alpha8)) // use GetKey to get constant press, KeyDown only gets once, much better for keyboard
-        {
-            MoveSurface("down");
-            // Get changed angle of the control surface
-            inspectorFloat = KeyboardRotationHelperMethods.WrapAngle(rightElevator.transform.localEulerAngles.y);
-            surfacePosition = KeyboardRotationHelperMethods.GetSurfacePosition(inspectorFloat);  // Update the surface position varaible
-            KeyboardRotationHelperMethods.ManualJoystickMove();  // move the joystick based on surface position for both ailerons and elevators
-        }
-        if (Input.GetKeyUp(KeyCode.Keypad8) || Input.GetKeyUp(KeyCode.Alpha8)) // use GetKey to get constant press, KeyDown only gets once, much better for keyboard
-        {
-            MoveSurface("up");
-            // Get changed angle of the control surface
-            inspectorFloat = KeyboardRotationHelperMethods.WrapAngle(rightElevator.transform.localEulerAngles.y);
-            surfacePosition = KeyboardRotationHelperMethods.GetSurfacePosition(inspectorFloat);  // Update the surface position varaible
-            KeyboardRotationHelperMethods.ManualJoystickMove();  // move the joystick based on surface position for both ailerons and elevators
-        }
-
+        MoveSurface("up");  // Move the surface
+        inspectorFloat = RotationHelperMethods.WrapAngle(rightElevator.transform.localEulerAngles.y);  // wrap the y angle to stop it going over 180 or bellow -180
+        surfacePosition = RotationHelperMethods.GetSurfacePosition(inspectorFloat);  // Update the surface position varaible
+        RotationHelperMethods.ManualJoystickMove();  // move the joystick based on surface position for both ailerons and elevators
     }
+
+    private void ElevatorsUpReverse()
+    {
+        MoveSurface("down");  // Move the surface
+        inspectorFloat = RotationHelperMethods.WrapAngle(rightElevator.transform.localEulerAngles.y);  // wrap the y angle to stop it going over 180 or bellow -180
+        surfacePosition = RotationHelperMethods.GetSurfacePosition(inspectorFloat);  // Update the surface position varaible
+        RotationHelperMethods.ManualJoystickMove();  // move the joystick based on surface position for both ailerons and elevators
+    }
+
+    private void ElevatorsDown()
+    {
+        MoveSurface("down");  // Move the surface
+        inspectorFloat = RotationHelperMethods.WrapAngle(rightElevator.transform.localEulerAngles.y);  // wrap the y angle to stop it going over 180 or bellow -180
+        surfacePosition = RotationHelperMethods.GetSurfacePosition(inspectorFloat);  // Update the surface position varaible
+        RotationHelperMethods.ManualJoystickMove();  // move the joystick based on surface position for both ailerons and elevators
+    }
+
+    private void ElevatorsDownReverse()
+    {
+        MoveSurface("up");  // Move the surface
+        inspectorFloat = RotationHelperMethods.WrapAngle(rightElevator.transform.localEulerAngles.y);  // wrap the y angle to stop it going over 180 or bellow -180
+        surfacePosition = RotationHelperMethods.GetSurfacePosition(inspectorFloat);  // Update the surface position varaible
+        RotationHelperMethods.ManualJoystickMove();  // move the joystick based on surface position for both ailerons and elevators
+    }
+
 
     private void MoveSurface(string direction)
     {
@@ -70,8 +79,8 @@ public class ElevatorsRotateKeyboard : MonoBehaviour
             if (inspectorFloat < TOPCLAMP)
             {
                 Quaternion rotation = Quaternion.Euler(0f, KEYBOARD_DEGRESS, 0f);
-                KeyboardRotationHelperMethods.RotateSurface(rightElevator, rotation, SPEED);
-                KeyboardRotationHelperMethods.RotateSurface(leftElevator, rotation, SPEED);
+                RotationHelperMethods.RotateSurface(rightElevator, rotation, SPEED);
+                RotationHelperMethods.RotateSurface(leftElevator, rotation, SPEED);
             }
         }
         else if(direction == "down")
@@ -79,11 +88,9 @@ public class ElevatorsRotateKeyboard : MonoBehaviour
             if (inspectorFloat > BOTTOMCLAMP)
             {
                 Quaternion rotation = Quaternion.Euler(0f, -KEYBOARD_DEGRESS, 0f);
-                KeyboardRotationHelperMethods.RotateSurface(rightElevator, rotation, SPEED);
-                KeyboardRotationHelperMethods.RotateSurface(leftElevator, rotation, SPEED);
+                RotationHelperMethods.RotateSurface(rightElevator, rotation, SPEED);
+                RotationHelperMethods.RotateSurface(leftElevator, rotation, SPEED);
             }
         }
-
     }
-
 }
