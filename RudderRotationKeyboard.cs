@@ -43,7 +43,6 @@ public class RudderRotationKeyboard : MonoBehaviour, IPointerDownHandler, IPoint
         rightPedal = GameObject.Find("R_Pedal").GetComponent<Button>();
         currentInput = InputType.none;
         controls.KeyboardInput.Enable();  // Start with the keyboard controls enabled
-        //pedalPressedMouse = false;
     }
 
 
@@ -88,6 +87,7 @@ public class RudderRotationKeyboard : MonoBehaviour, IPointerDownHandler, IPoint
     //    yield return new WaitForSeconds(0.2f);  // wait 200ms
     //    pedal.transform.localScale = new Vector3(1f, 1f, 1f);
     //}
+
 
     // Event System and Standalone input module added to buttons in Unity to detect MouseDown and MouseUp events
     // Buttons must also have the script attatched
@@ -186,8 +186,6 @@ public class RudderRotationKeyboard : MonoBehaviour, IPointerDownHandler, IPoint
             currentInput = InputType.none;
         }
     }
-
-
 }
 
 
