@@ -37,18 +37,17 @@ public class JoystickMovement : MonoBehaviour
 
     void Awake()
     {
-
-        // Elevators
         controls = new PlayerControls();
-        controls.KeyboardInput.ElevatorsUp.performed += context => ElevatorsUp();  // context cant be used to get input information
-        controls.KeyboardInput.ElevatorsDown.performed += context => ElevatorsDown();  // context cant be used to get input information
-        controls.KeyboardInput.ElevatorsUpReverse.performed += context => ElevatorsUpReverse();  // context cant be used to get input information
-        controls.KeyboardInput.ElevatorsDownReverse.performed += context => ElevatorsDownReverse();  // context cant be used to get input information
-                                                                                                     // Ailerons
-        controls.KeyboardInput.AileronsUp.performed += context => AileronsUp();  // context cant be used to get input information
-        controls.KeyboardInput.AileronsDown.performed += context => AileronsDown();  // context cant be used to get input information
-        controls.KeyboardInput.AileronsUpReverse.performed += context => AileronsUpReverse();  // context cant be used to get input information
-        controls.KeyboardInput.AileronsDownReverse.performed += context => AileronsDownReverse();  // context cant be used to get input information
+        // Elevator Keys
+        controls.KeyboardInput.ElevatorsUp.performed += context => ButtonJoystickMoveElevators("up");  // context cant be used to get input information
+        controls.KeyboardInput.ElevatorsDown.performed += context => ButtonJoystickMoveElevators("down");  // context cant be used to get input information
+        controls.KeyboardInput.ElevatorsUpReverse.performed += context => ButtonJoystickMoveElevators("reverse");  // context cant be used to get input information
+        controls.KeyboardInput.ElevatorsDownReverse.performed += context => ButtonJoystickMoveElevators("reverse");  // context cant be used to get input information
+        // Aileron Keys
+        controls.KeyboardInput.AileronsUp.performed += context => ButtonJoystickMoveAilerons("up"); // context cant be used to get input information
+        controls.KeyboardInput.AileronsDown.performed += context => ButtonJoystickMoveAilerons("down"); // context cant be used to get input information
+        controls.KeyboardInput.AileronsUpReverse.performed += context => ButtonJoystickMoveAilerons("reverse");  // context cant be used to get input information
+        controls.KeyboardInput.AileronsDownReverse.performed += context => ButtonJoystickMoveAilerons("reverse");  // context cant be used to get input information
 
     }
 
@@ -187,54 +186,6 @@ public class JoystickMovement : MonoBehaviour
         {
             joystickHandle.transform.localPosition = new Vector3(0, joystickCurrentY, joystickCurrentZ);
         }
+        MoveSurfaces();  // move surfaces based on joystick location
     }
-
-    private void ElevatorsUp()
-    {
-        ButtonJoystickMoveElevators("up");
-        MoveSurfaces();
-    }
-
-    private void ElevatorsUpReverse()
-    {
-        ButtonJoystickMoveElevators("reverse");
-        MoveSurfaces();
-    }
-
-    private void ElevatorsDown()
-    {
-        ButtonJoystickMoveElevators("down");
-        MoveSurfaces();
-    }
-
-    private void ElevatorsDownReverse()
-    {
-        ButtonJoystickMoveElevators("reverse");
-        MoveSurfaces();
-    }
-
-    private void AileronsUp()
-    {
-        ButtonJoystickMoveAilerons("up");
-        MoveSurfaces();
-    }
-
-    private void AileronsUpReverse()
-    {
-        ButtonJoystickMoveAilerons("reverse");
-        MoveSurfaces();
-    }
-
-    private void AileronsDown()
-    {
-        ButtonJoystickMoveAilerons("down");
-        MoveSurfaces();
-    }
-
-    private void AileronsDownReverse()
-    {
-        ButtonJoystickMoveAilerons("reverse");
-        MoveSurfaces();
-    }
-
 }

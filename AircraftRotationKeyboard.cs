@@ -97,4 +97,6 @@ public class AircraftRotationKeyboard : MonoBehaviour
         surface.transform.localRotation = Quaternion.Slerp(surface.transform.localRotation, target,
                                                            smoothing * Time.deltaTime * speed);
     }
+
+
 }

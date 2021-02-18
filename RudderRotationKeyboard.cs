@@ -12,6 +12,9 @@ public class RudderRotationKeyboard : MonoBehaviour, IPointerDownHandler, IPoint
     private Button leftPedal;
     private Button rightPedal;
 
+    private Vector3 pedalFullsize = new Vector3(0.75f, 0.75f, 0.75f);
+    private Vector3 pedalSmallsize = new Vector3(0.6f, 0.6f, 0.6f);
+
     private InputType currentInput;
 
     private float SPEED = 100f;
@@ -45,40 +48,39 @@ public class RudderRotationKeyboard : MonoBehaviour, IPointerDownHandler, IPoint
         controls.KeyboardInput.Enable();  // Start with the keyboard controls enabled
     }
 
-
     private void LeftPedalDown()
     {
         PedalDown(leftPedal);
-        MoveSurface("right", KEYBOARD_DEGRESS);
+        MoveSurface("left", KEYBOARD_DEGRESS);
     }
 
     private void LeftPedalUp()
     {
         PedalUp(leftPedal);
-        MoveSurface("left", KEYBOARD_DEGRESS);
+        MoveSurface("right", KEYBOARD_DEGRESS);
     }
 
     private void RightPedalDown()
     {
         PedalDown(rightPedal);
-        MoveSurface("left", KEYBOARD_DEGRESS);
+        MoveSurface("right", KEYBOARD_DEGRESS);
     }
 
     private void RightPedalUp()
     {
         PedalUp(rightPedal);
-        MoveSurface("right", KEYBOARD_DEGRESS);
+        MoveSurface("left", KEYBOARD_DEGRESS);
     }
 
 
     private void PedalDown(Button pedal)
     {
-        pedal.transform.localScale = new Vector3(0.90f, 0.90f, 0.90f); // make pedal smaller to visualise foot press
+        pedal.transform.localScale = pedalSmallsize; // make pedal smaller to visualise foot press
     }
 
     private void PedalUp(Button pedal)
     {
-        pedal.transform.localScale = new Vector3(1f, 1f, 1f);
+        pedal.transform.localScale = pedalFullsize;
 
     }
 
@@ -101,14 +103,14 @@ public class RudderRotationKeyboard : MonoBehaviour, IPointerDownHandler, IPoint
                 InputSystem.DisableDevice(Keyboard.current);
                 currentInput = InputType.mouse;
                 PedalDown(leftPedal);
-                MoveSurface("right", MOUSE_DEGREES);
+                MoveSurface("left", MOUSE_DEGREES);
             }
             if (eventData.selectedObject.name == "R_Pedal")
             {
                 InputSystem.DisableDevice(Keyboard.current);
                 currentInput = InputType.mouse;
                 PedalDown(rightPedal);
-                MoveSurface("left", MOUSE_DEGREES);
+                MoveSurface("right", MOUSE_DEGREES);
             }
         }
 
@@ -122,14 +124,14 @@ public class RudderRotationKeyboard : MonoBehaviour, IPointerDownHandler, IPoint
             if (eventData.selectedObject.name == "L_Pedal")
             {
                 PedalUp(leftPedal);
-                MoveSurface("left", MOUSE_DEGREES);
+                MoveSurface("right", MOUSE_DEGREES);
                 currentInput = InputType.none;
                 InputSystem.EnableDevice(Keyboard.current);
             }
             if (eventData.selectedObject.name == "R_Pedal")
             {
                 PedalUp(rightPedal);
-                MoveSurface("right", MOUSE_DEGREES);
+                MoveSurface("left", MOUSE_DEGREES);
                 currentInput = InputType.none;
                 InputSystem.EnableDevice(Keyboard.current);
             }
