@@ -15,20 +15,12 @@ public class RudderRotationKeyboard : MonoBehaviour, IPointerDownHandler, IPoint
     private Vector3 pedalFullsize = new Vector3(0.75f, 0.75f, 0.75f);
     private Vector3 pedalSmallsize = new Vector3(0.6f, 0.6f, 0.6f);
 
-    private InputType currentInput;
+    // Variables used to store rudder starting rotations
+    float rudderX, rudderY;
 
-    private float SPEED = 100f;
-    private float KEYBOARD_DEGRESS = 8f;  // change this is a much smaller amount for other input types to allow some sensitivity - 10f is 20 degrees approx
-    private float MOUSE_DEGREES = 24f;  // degrees to move the rudder on mouse click - half of those to keyboard as rudder will always be in the middle on mouse click,
+    private float KEYBOARD_DEGRESS = 20f;  // change this is a much smaller amount for other input types to allow some sensitivity - 10f is 20 degrees approx
 
     private PlayerControls controls;
-
-    private enum InputType  // enum used to potentially expand out class for HOTAS / gamepad
-    {
-        keyboard,
-        mouse,
-        none
-    }
 
     void Awake()
     {
@@ -41,35 +33,38 @@ public class RudderRotationKeyboard : MonoBehaviour, IPointerDownHandler, IPoint
     }
     void Start()
     {
-        rudder = GameObject.Find("RudderPivot");
+        rudder = GameObject.Find("Rudder");
         leftPedal = GameObject.Find("L_Pedal").GetComponent<Button>();
         rightPedal = GameObject.Find("R_Pedal").GetComponent<Button>();
-        currentInput = InputType.none;
+
+        rudderX = rudder.transform.localEulerAngles.x;
+        rudderY = rudder.transform.localEulerAngles.y;
+
         controls.KeyboardInput.Enable();  // Start with the keyboard controls enabled
     }
 
     private void LeftPedalDown()
     {
         PedalDown(leftPedal);
-        MoveSurface("left", KEYBOARD_DEGRESS);
+        MoveRudder("left");
     }
 
     private void LeftPedalUp()
     {
         PedalUp(leftPedal);
-        MoveSurface("right", KEYBOARD_DEGRESS);
+        MoveRudder("start");
     }
 
     private void RightPedalDown()
     {
         PedalDown(rightPedal);
-        MoveSurface("right", KEYBOARD_DEGRESS);
+        MoveRudder("right");
     }
 
     private void RightPedalUp()
     {
         PedalUp(rightPedal);
-        MoveSurface("left", KEYBOARD_DEGRESS);
+        MoveRudder("start");
     }
 
 
@@ -95,98 +90,85 @@ public class RudderRotationKeyboard : MonoBehaviour, IPointerDownHandler, IPoint
     // Buttons must also have the script attatched
     public void OnPointerDown(PointerEventData eventData)
     {
-        if(currentInput == InputType.none || currentInput == InputType.mouse)
-        { // If currentInput is keyboard, do nothing
-
             if (eventData.selectedObject.name == "L_Pedal")
             {
-                InputSystem.DisableDevice(Keyboard.current);
-                currentInput = InputType.mouse;
                 PedalDown(leftPedal);
-                MoveSurface("left", MOUSE_DEGREES);
+                MoveRudder("left");
             }
             if (eventData.selectedObject.name == "R_Pedal")
             {
-                InputSystem.DisableDevice(Keyboard.current);
-                currentInput = InputType.mouse;
                 PedalDown(rightPedal);
-                MoveSurface("right", MOUSE_DEGREES);
+                MoveRudder("right");
             }
-        }
-
     }
 
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        if (currentInput == InputType.mouse)
-        {
             if (eventData.selectedObject.name == "L_Pedal")
             {
                 PedalUp(leftPedal);
-                MoveSurface("right", MOUSE_DEGREES);
-                currentInput = InputType.none;
-                InputSystem.EnableDevice(Keyboard.current);
+                MoveRudder("start");
             }
             if (eventData.selectedObject.name == "R_Pedal")
             {
                 PedalUp(rightPedal);
-                MoveSurface("left", MOUSE_DEGREES);
-                currentInput = InputType.none;
-                InputSystem.EnableDevice(Keyboard.current);
-            }
-        }    
+                MoveRudder("start");
+            }  
     }
 
-    private void MoveSurface(string direction, float degrees)
+    private void MoveRudder(string direction)  // Overloaded method deals with keyboard / mouse input
     {
-        if (direction == "left")
-        {
-                Quaternion rotation = Quaternion.Euler(0f, 0f, degrees);
-                RotationHelperMethods.RotateSurface(rudder, rotation, SPEED);
-        }
-        else if (direction == "right")
-        {
-                Quaternion rotation = Quaternion.Euler(0f, 0f, -degrees);
-                RotationHelperMethods.RotateSurface(rudder, rotation, SPEED);
-        }
+        float degrees;
 
+        if(direction == "left")
+        {
+            degrees = KEYBOARD_DEGRESS;
+            rudder.transform.localEulerAngles = new Vector3(rudderX, rudderY, degrees);
+
+        }
+        else if(direction == "right") 
+        {
+            degrees = -KEYBOARD_DEGRESS;
+            rudder.transform.localEulerAngles = new Vector3(rudderX, rudderY, degrees);
+        }
+        else if(direction == "start")
+        {
+            rudder.transform.localEulerAngles = new Vector3(rudderX, rudderY, 0f);  // return to start position
+        }
+        //float degrees = currentJoystickCoords.y * degreesPerJoystickMove;
+        // rotate around parents pivot point on the y axis to the required degrees out of 20
+        Debug.Log(rudder.transform.localEulerAngles);
+    }
+
+    private void MoveRudder()  // Method deals with control pad input
+    {
+        //float degrees currentJoystickCoords.x* degreesPerJoystickMove;
+
+        //rudder.transform.localEulerAngles = new Vector3(rudderX, rudderY, degrees);  // return to start position
+     
+        //float degrees = currentJoystickCoords.y * degreesPerJoystickMove;
+        // rotate around parents pivot point on the y axis to the required degrees out of 20
     }
 
     private void LeftPedalDownKeyboard()
     {
-        if (currentInput == InputType.none || currentInput == InputType.keyboard)
-        {
-            currentInput = InputType.keyboard;
             LeftPedalDown();
-        }
     }
 
     private void LeftPedalUpKeyboard()
     {
-        if (currentInput == InputType.none || currentInput == InputType.keyboard)
-        {
             LeftPedalUp();
-            currentInput = InputType.none;
-        }
     }
 
     private void RightPedalDownKeyboard()
     {
-        if (currentInput == InputType.none || currentInput == InputType.keyboard)
-        {
-            currentInput = InputType.keyboard;
             RightPedalDown();
-        }
     }
 
     private void RightPedalUpKeyboard()
     {
-        if (currentInput == InputType.none || currentInput == InputType.keyboard)
-        {
             RightPedalUp();
-            currentInput = InputType.none;
-        }
     }
 }
 

@@ -28,7 +28,7 @@ public class AircraftRotationKeyboard : MonoBehaviour
     {
         mainCamera = GameObject.Find("SkyboxCamera").GetComponent<Camera>();
         aircraft = GameObject.Find("AircraftPivot");
-        rudder = GameObject.Find("RudderPivot");  
+        rudder = GameObject.Find("Rudder");  
         rightAileron = GameObject.Find("R_Aileron");
         rightElevator = GameObject.Find("RightElevator");
 
@@ -39,24 +39,8 @@ public class AircraftRotationKeyboard : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-        //RotateCamera();
-        RotateAircraft();  // Rotate the aircraft depending on the control surface settings
+       RotateAircraft();  // Rotate the aircraft depending on the control surface settings
     }
-
-    //private void RotateCamera()  // Rudder changes direction so controls cam direction - Cannot make camera move to make it look like no rotation if on zero unfortunately
-    //{
-    //    if(rudderInspectorFloat >= 0)
-    //    {
-    //        // Rotate Right
-    //        mainCamera.transform.Rotate(Vector3.down, sliderValue * Time.deltaTime);
-    //    }
-    //    else
-    //    {
-    //        //rotate Left
-    //        mainCamera.transform.Rotate(Vector3.up, sliderValue * Time.deltaTime);
-    //    }
-    //}
 
     private void RotateAircraft()
     {
@@ -87,16 +71,4 @@ public class AircraftRotationKeyboard : MonoBehaviour
         }
 
     }
-
-
-    public static void RotateSurface(GameObject surface, Quaternion rotation, float speed)
-    {
-        // Create a target which is the surface's original rotation, rotated by the input.
-        Quaternion target = surface.transform.localRotation * rotation; // The orignallocalRotation
-                                                                        // Slerp the surface's current rotation towards the target rotation (current rotation * the axis which we want to move, by amount we want to move it by).
-        surface.transform.localRotation = Quaternion.Slerp(surface.transform.localRotation, target,
-                                                           smoothing * Time.deltaTime * speed);
-    }
-
-
 }

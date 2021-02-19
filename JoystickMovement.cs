@@ -39,8 +39,8 @@ public class JoystickMovement : MonoBehaviour
     {
         controls = new PlayerControls();
         // Elevator Keys
-        controls.KeyboardInput.ElevatorsUp.performed += context => ButtonJoystickMoveElevators("up");  // context cant be used to get input information
-        controls.KeyboardInput.ElevatorsDown.performed += context => ButtonJoystickMoveElevators("down");  // context cant be used to get input information
+        controls.KeyboardInput.ElevatorsUp.performed += context => ButtonJoystickMoveElevators("down");  // context cant be used to get input information
+        controls.KeyboardInput.ElevatorsDown.performed += context => ButtonJoystickMoveElevators("up");  // context cant be used to get input information
         controls.KeyboardInput.ElevatorsUpReverse.performed += context => ButtonJoystickMoveElevators("reverse");  // context cant be used to get input information
         controls.KeyboardInput.ElevatorsDownReverse.performed += context => ButtonJoystickMoveElevators("reverse");  // context cant be used to get input information
         // Aileron Keys
