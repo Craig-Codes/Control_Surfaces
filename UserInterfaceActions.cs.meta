@@ -3,7 +3,15 @@ guid: be9619dba75835f4898c0a7212fe2946
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - defaultPointer: {fileID: 2800000, guid: e799811afe5b0e44eb3aebed1328d137, type: 3}
+  - controls: {fileID: 2800000, guid: 8a777393fa4a8694797111360bff3870, type: 3}
+  - magnify: {fileID: 2800000, guid: 4235947fc61b99c49b320e927407258f, type: 3}
+  - quit: {fileID: 2800000, guid: 5a439fff18a35334ca3d76dc7446532d, type: 3}
+  - info: {fileID: 2800000, guid: 34bd3e98cb7c8664ba124ece34ec1b42, type: 3}
+  - reload: {fileID: 2800000, guid: e1ce3a566da267b4eaebe5e368cc8514, type: 3}
+  - mouse: {fileID: 2800000, guid: 7934ce2e9b7a7bc47bee6f7d194c4d1f, type: 3}
+  - keyboard: {fileID: 2800000, guid: f4308bb2f38e25348bc5a9b5347755ca, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
