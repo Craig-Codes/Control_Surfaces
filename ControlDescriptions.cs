@@ -112,11 +112,11 @@ public class ControlDescriptions : MonoBehaviour
         }
         else if (current > 1)
         {
-            aileronString = "Portside Aileron is deflecting downwards, starboard side is deflecting upwards";
+            aileronString = "Portside Aileron is deflecting downwards, starboard is deflecting upwards";
         }
         else
         {
-            aileronString = "Portside Aileron is deflecting upwards, starboard side is deflecting downwards";
+            aileronString = "Portside Aileron is deflecting upwards, starboard is deflecting downwards";
         }
     }
 
