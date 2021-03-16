@@ -29,7 +29,7 @@ public class AirspeedCalculation : MonoBehaviour
 
     private void MovePointer(float throttle)
     {
-        airspeedNeedle.anchoredPosition = new Vector2(airspeedNeedle.anchoredPosition.x, throttle * 140);
+        airspeedNeedle.anchoredPosition = new Vector2(airspeedNeedle.anchoredPosition.x, throttle * 142);
         Debug.Log(airspeedNeedle.anchoredPosition.y);
     }
 }
