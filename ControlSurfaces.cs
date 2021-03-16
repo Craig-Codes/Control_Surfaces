@@ -11,101 +11,113 @@ public class ControlSurfaces : MonoBehaviour
     private GameObject leftAileronObject;
     private GameObject rightAileronObject;
 
-    // Variables used to store rudder starting rotations
-    float rudderX, rudderY;
+    public static Rudder rudder;  // Only one instance of class shared across all scripts - once created can be called from other scripts
+    public static Elevator leftElevator;
+    public static Elevator rightElevator;
+    public static Aileron leftAileron;
+    public static Aileron rightAileron;
 
-    // Variables used to store elevator starting rotations
-    float leftElevatorX, leftElevatorZ, rightElevatorX, rightElevatorZ;
-
-    // Variables used to store aileron strating positions
-    float leftAileronX, leftAileronZ, rightAileronX, rightAileronZ;
-
-    static Rudder rudder;
-
-
-    abstract class Surface
+    public abstract class Surface
     {
-        public GameObject surface;  // Reference to the GameObject manipulated by the class
-           public Surface(GameObject controlSurface)  // Constructor
+        internal GameObject surface;  // Reference to the GameObject manipulated by the class - internal means can be seen in derived classes
+        internal float x, y, z;  // angles of each axis
+        internal float degreesPerJoystickMove = 0.3125f;
+        internal float joystickRadius = 64f;
+        public Surface(GameObject controlSurface)  // Constructor
         {
             this.surface = controlSurface;  // pass in the Surface gameobject
+            // Get the control surfaces current starting axis angles
+            this.x = this.surface.transform.localEulerAngles.x;
+            this.y = this.surface.transform.localEulerAngles.y;
+            this.z = this.surface.transform.localEulerAngles.z;
+            Setup();  // Set the axis the object is rotated by to 0 at the start
         }
 
-        public void test()
+        public virtual void Setup()  // virtual method can be overwritten in derived classes, as different axis are used for each control surface
         {
-            Debug.Log(this.surface);
+            this.surface.transform.localEulerAngles = new Vector3(x, 0, z);  // start y rotation value at 0
+        }
+
+        public void Rotate(Vector3 angle)  // rotate the surface by angle argument
+        {
+            this.surface.transform.localEulerAngles = new Vector3(angle.x, angle.y, angle.z);
         }
 
     }
 
-    class Rudder : Surface
+    public class Rudder : Surface
     {
         public Rudder(GameObject controlSurface) : base(controlSurface)
         {
+            Setup();
+        }
+        public override void Setup() 
+        {
+            this.surface.transform.localEulerAngles = new Vector3(x, y, 0);  // start z rotation value at 0 (ailerons and elevators)
         }
 
-        public void MoveRudder()  // Overloaded method deals with keyboard / mouse input
+        public void MoveRudder(string direction)  // Overloaded method deals with keyboard / mouse input
         {
-            //float degrees;
+            float degrees;
+            float KEYBOARD_DEGREES = 20f;  // amount of degrees to move when using the keyboard
 
-            //if (direction == "left")
-            //{
-            //    degrees = KEYBOARD_DEGRESS;
-            //    this.surface.transform.localEulerAngles = new Vector3(rudderX, rudderY, degrees);
+            if (direction == "left")
+            {
+                degrees = KEYBOARD_DEGREES;
+                this.surface.transform.localEulerAngles = new Vector3(this.x, this.y, degrees);
 
-            //}
-            //else if (direction == "right")
-            //{
-            //    degrees = -KEYBOARD_DEGRESS;
-            //    this.surface.transform.localEulerAngles = new Vector3(rudderX, rudderY, degrees);
-            //}
-            //else if (direction == "start")
-            //{
-            //    this.surface.transform.localEulerAngles = new Vector3(rudderX, rudderY, 0f);  // return to start position
-            //}
+            }
+            else if (direction == "right")
+            {
+                degrees = -KEYBOARD_DEGREES;
+                this.surface.transform.localEulerAngles = new Vector3(this.x, this.y, degrees);
+            }
+            else if (direction == "start")
+            {
+                this.surface.transform.localEulerAngles = new Vector3(this.x, this.y, 0f);  // return to start position
+            }
             //float degrees = currentJoystickCoords.y * degreesPerJoystickMove;
-            // rotate around parents pivot point on the y axis to the required degrees out of 20
+            //rotate around parents pivot point on the y axis to the required degrees out of 20
             Debug.Log(this.surface.transform.localEulerAngles);
         }
+
     }
-    // Start is called before the first frame update
-    void Start()
+
+    public class Elevator : Surface
+    {
+
+        public Elevator(GameObject controlSurface) : base(controlSurface)
+        {
+            Setup();
+        }
+
+    }
+
+    public class Aileron : Surface
+    {
+
+        public Aileron(GameObject controlSurface) : base(controlSurface)
+        {
+            Setup();
+        }
+    }
+
+    void Awake()
     {
         // Rudder
-        rudderObject = GameObject.Find("Rudder");
-        // Rudder starting rotations
-        rudderX = rudderObject.transform.localEulerAngles.x;
-        rudderY = rudderObject.transform.localEulerAngles.y;
-        rudderObject.transform.localEulerAngles = new Vector3(rudderX, rudderY, 0);  // start rudder at 0
+        rudderObject = GameObject.Find("Rudder");  // Get reference to the rudder in Unity
+        rudder = new Rudder(rudderObject);
 
         // Elevators
         leftElevatorObject = GameObject.Find("LeftElevator");
+        leftElevator = new Elevator(leftElevatorObject);
         rightElevatorObject = GameObject.Find("RightElevator");
-        // Elevator starting rotations
-        leftElevatorX = leftElevatorObject.transform.localEulerAngles.x;
-        leftElevatorZ = leftElevatorObject.transform.localEulerAngles.z;
-        rightElevatorX = rightElevatorObject.transform.localEulerAngles.x;
-        rightElevatorZ = rightElevatorObject.transform.localEulerAngles.z;
-        leftElevatorObject.transform.localEulerAngles = new Vector3(leftElevatorX, 0, leftElevatorZ);  
-        rightElevatorObject.transform.localEulerAngles = new Vector3(rightElevatorX, 0, rightElevatorZ);  
+        rightElevator = new Elevator(rightElevatorObject);
 
         // Ailerons
         leftAileronObject = GameObject.Find("L_Aileron");
+        leftAileron = new Aileron(leftAileronObject);
         rightAileronObject = GameObject.Find("R_Aileron");
-        // Aileron starting rotations
-        leftAileronX = leftAileronObject.transform.localEulerAngles.x;
-        leftAileronZ = leftAileronObject.transform.localEulerAngles.z;
-        rightAileronX = rightAileronObject.transform.localEulerAngles.x;
-        rightAileronZ = rightAileronObject.transform.localEulerAngles.z;
-        leftAileronObject.transform.localEulerAngles = new Vector3(leftAileronX, 0, leftAileronZ);  
-        rightAileronObject.transform.localEulerAngles = new Vector3(rightAileronX, 0, rightAileronZ);
-
-        rudder = new Rudder(rudderObject);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        rudder.MoveRudder();
+        rightAileron = new Aileron(rightAileronObject);
     }
 }

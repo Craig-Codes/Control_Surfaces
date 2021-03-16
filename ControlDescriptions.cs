@@ -35,13 +35,13 @@ public class ControlDescriptions : MonoBehaviour
     {
         // starting message
         rudder = GameObject.Find("Rudder");
-        rudderZAngle = RotationHelperMethods.WrapAngle(rudder.transform.localEulerAngles.z);
+        rudderZAngle = WrapAngle(rudder.transform.localEulerAngles.z);
 
         leftAileron = leftAileron = GameObject.Find("L_Aileron");
-        aileronYAngle = RotationHelperMethods.WrapAngle(leftAileron.transform.localEulerAngles.y);
+        aileronYAngle = WrapAngle(leftAileron.transform.localEulerAngles.y);
 
         leftElevator = GameObject.Find("LeftElevator");
-        elevatorYAngle = RotationHelperMethods.WrapAngle(leftElevator.transform.localEulerAngles.y);
+        elevatorYAngle = WrapAngle(leftElevator.transform.localEulerAngles.y);
 
         // Get the TextMeshPro via code
         var textArray = FindObjectsOfType<TextMeshProUGUI>();
@@ -59,19 +59,19 @@ public class ControlDescriptions : MonoBehaviour
     {
         // Rudder 
         rudderPreviousValue = rudderZAngle;  // Put current position value into variable
-        rudderZAngle = RotationHelperMethods.WrapAngle(rudder.transform.localEulerAngles.z);  // update the position value
+        rudderZAngle = WrapAngle(rudder.transform.localEulerAngles.z);  // update the position value
         rudderCurrentValue = rudderZAngle;  // Put new position value into varaible
         GetRudderPositionChange(rudderPreviousValue, rudderCurrentValue);  // compare the values, building an output string based on results
 
         // Ailerons
         aileronPreviousValue = aileronYAngle;
-        aileronYAngle = RotationHelperMethods.WrapAngle(leftAileron.transform.localEulerAngles.y);
+        aileronYAngle = WrapAngle(leftAileron.transform.localEulerAngles.y);
         aileronCurrentValue = aileronYAngle;
         GetAileronPositionChange(aileronPreviousValue, aileronCurrentValue);
 
         // Elevators
         elevatorPreviousValue = elevatorYAngle;
-        elevatorYAngle = RotationHelperMethods.WrapAngle(leftElevator.transform.localEulerAngles.y);
+        elevatorYAngle = WrapAngle(leftElevator.transform.localEulerAngles.y);
         elevatorCurrentValue = elevatorYAngle;
         GetElevatorPositionChange(elevatorPreviousValue, elevatorCurrentValue);
 
@@ -134,5 +134,14 @@ public class ControlDescriptions : MonoBehaviour
         {
             elevatorString = "Elevators are deflecting upwards";
         }
+    }
+
+    private float WrapAngle(float angle)
+    {
+        angle %= 360;
+        if (angle > 180)
+            return angle - 360;
+
+        return angle;
     }
 }
