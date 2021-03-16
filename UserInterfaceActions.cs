@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class UserInterfaceActions : MonoBehaviour
 {
@@ -16,6 +17,8 @@ public class UserInterfaceActions : MonoBehaviour
     public Texture2D reload;
     public Texture2D mouse;
     public Texture2D keyboard;
+
+    private TextMeshProUGUI controlInputDescription;
 
     // UI menu system
     private RectTransform infoPanel;
@@ -37,7 +40,7 @@ public class UserInterfaceActions : MonoBehaviour
 
     // Popup secondary cameras
     private Vector3 scaleChange;
-    private float topScale = 2.5f;
+    private float topScale = 2.2f;
 
     private Color32 white = new Color32(255, 255, 255, 255); // Default colour over images - clear white
     private Color32 grey = new Color32(100, 100, 100, 255);  // Grey tint over images, used when selected
@@ -65,6 +68,17 @@ public class UserInterfaceActions : MonoBehaviour
         controlsPanel.localScale = Vector3.zero;
         controlsIsVisible = false;
 
+
+        // Get the TextMeshPro via code
+        var textArray = FindObjectsOfType<TextMeshProUGUI>();
+        foreach(var element in textArray)
+        {
+            if(element.tag == "ControlsDescription")
+            {
+                controlInputDescription = element;
+            }   
+        }
+
         mouseControlsText = GameObject.FindGameObjectWithTag("ControlsText").GetComponent<RectTransform>();
         keyboardControlsImage = GameObject.FindGameObjectWithTag("KeyboardControlsImage").GetComponent<RectTransform>(); 
         gamepadControlsImage = GameObject.FindGameObjectWithTag("GamepadControlsImage").GetComponent<RectTransform>();
@@ -89,8 +103,6 @@ public class UserInterfaceActions : MonoBehaviour
             CockpitPositionChange();
             ChasePositionChange();
         }
-
-
     }
 
     // Reverse the boolean values on click
@@ -272,6 +284,7 @@ public class UserInterfaceActions : MonoBehaviour
             Cursor.SetCursor(quit, customOffset, cursorMode);
             infoIsVisible = true;
         }
+        ShowHideControlSurfaceDescriptions();
     }
 
     public void OnMouseClickControls()
@@ -293,6 +306,7 @@ public class UserInterfaceActions : MonoBehaviour
             Cursor.SetCursor(quit, customOffset, cursorMode);
             controlsIsVisible = true;
         }
+        ShowHideControlSurfaceDescriptions();
     }
 
     public void OnMouseEnterGamepad()
@@ -334,5 +348,19 @@ public class UserInterfaceActions : MonoBehaviour
     public void OnMouseClickReset()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);  // Resets the current scene
+    }
+
+    public void ShowHideControlSurfaceDescriptions()
+    {
+        // hide the control surface description text if info or control pannels are open
+        if (infoIsVisible || controlsIsVisible)
+        {
+            controlInputDescription.alpha = 0;
+        }
+        else
+        {
+            controlInputDescription.alpha = 1;
+        }
+
     }
 }

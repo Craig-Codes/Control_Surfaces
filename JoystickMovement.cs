@@ -70,6 +70,8 @@ public class JoystickMovement : MonoBehaviour
         leftElevatorZ = leftElevator.transform.localEulerAngles.z;
         rightElevatorX = rightElevator.transform.localEulerAngles.x;
         rightElevatorZ = rightElevator.transform.localEulerAngles.z;
+        leftElevator.transform.localEulerAngles = new Vector3(leftElevatorX, 0, leftElevatorZ);  // start rudder at 0
+        rightElevator.transform.localEulerAngles = new Vector3(rightElevatorX, 0, rightElevatorZ);  // start rudder at 0
 
         // Ailerons
         leftAileron = GameObject.Find("L_Aileron");
@@ -80,6 +82,8 @@ public class JoystickMovement : MonoBehaviour
         leftAileronZ = leftAileron.transform.localEulerAngles.z;
         rightAileronX = rightAileron.transform.localEulerAngles.x;
         rightAileronZ = rightAileron.transform.localEulerAngles.z;
+        leftAileron.transform.localEulerAngles = new Vector3(leftAileronX, 0, leftAileronZ);  // start rudder at 0
+        rightAileron.transform.localEulerAngles = new Vector3(rightAileronX, 0, rightAileronZ);  // start rudder at 0
 
     }
 

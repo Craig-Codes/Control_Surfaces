@@ -39,6 +39,7 @@ public class RudderRotationKeyboard : MonoBehaviour, IPointerDownHandler, IPoint
 
         rudderX = rudder.transform.localEulerAngles.x;
         rudderY = rudder.transform.localEulerAngles.y;
+        rudder.transform.localEulerAngles = new Vector3(rudderX, rudderY, 0);  // start rudder at 0
 
         controls.KeyboardInput.Enable();  // Start with the keyboard controls enabled
     }
