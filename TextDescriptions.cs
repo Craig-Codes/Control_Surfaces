@@ -3,28 +3,34 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class ControlDescriptions : MonoBehaviour
+public class TextDescriptions : MonoBehaviour
 {
 
     private TextMeshProUGUI controlInputDescription;
 
+    // Reference to control surface objects
+    ControlSurfaces.Rudder rudder;
+    ControlSurfaces.Surface leftAileron;
+    ControlSurfaces.Surface leftElevator;
+
     // control surface capture vars
     // Rudder
-    private GameObject rudder;
+    //private GameObject rudder;
     float rudderZAngle;
     float rudderPreviousValue;
     float rudderCurrentValue;
     string rudderString;  // variable stores the current direction of the rudder
 
+
     // Ailerons
-    private GameObject leftAileron;
+    //private GameObject leftAileron;
     float aileronYAngle;
     float aileronPreviousValue;
     float aileronCurrentValue;
     string aileronString;  // variable stores the current direction of the rudder
 
     // Elevators
-    private GameObject leftElevator;
+    //private GameObject leftElevator;
     float elevatorYAngle;
     float elevatorPreviousValue;
     float elevatorCurrentValue;
@@ -33,15 +39,15 @@ public class ControlDescriptions : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        // Get the control surfaces
+        rudder = ControlSurfaces.rudder;
+        leftAileron = ControlSurfaces.leftAileron;
+        leftElevator = ControlSurfaces.leftElevator;
+
         // starting message
-        rudder = GameObject.Find("Rudder");
-        rudderZAngle = WrapAngle(rudder.transform.localEulerAngles.z);
-
-        leftAileron = leftAileron = GameObject.Find("L_Aileron");
-        aileronYAngle = WrapAngle(leftAileron.transform.localEulerAngles.y);
-
-        leftElevator = GameObject.Find("LeftElevator");
-        elevatorYAngle = WrapAngle(leftElevator.transform.localEulerAngles.y);
+        rudderZAngle = WrapAngle(rudder.GetCurrentRotations().z);
+        aileronYAngle = WrapAngle(leftAileron.GetCurrentRotations().y);
+        elevatorYAngle = WrapAngle(leftElevator.GetCurrentRotations().y);
 
         // Get the TextMeshPro via code
         var textArray = FindObjectsOfType<TextMeshProUGUI>();
@@ -59,19 +65,19 @@ public class ControlDescriptions : MonoBehaviour
     {
         // Rudder 
         rudderPreviousValue = rudderZAngle;  // Put current position value into variable
-        rudderZAngle = WrapAngle(rudder.transform.localEulerAngles.z);  // update the position value
+        rudderZAngle = WrapAngle(rudder.GetCurrentRotations().z);  // update the position value
         rudderCurrentValue = rudderZAngle;  // Put new position value into varaible
         GetRudderPositionChange(rudderPreviousValue, rudderCurrentValue);  // compare the values, building an output string based on results
 
         // Ailerons
         aileronPreviousValue = aileronYAngle;
-        aileronYAngle = WrapAngle(leftAileron.transform.localEulerAngles.y);
+        aileronYAngle = WrapAngle(leftAileron.GetCurrentRotations().y);
         aileronCurrentValue = aileronYAngle;
         GetAileronPositionChange(aileronPreviousValue, aileronCurrentValue);
 
         // Elevators
         elevatorPreviousValue = elevatorYAngle;
-        elevatorYAngle = WrapAngle(leftElevator.transform.localEulerAngles.y);
+        elevatorYAngle = WrapAngle(leftElevator.GetCurrentRotations().y);
         elevatorCurrentValue = elevatorYAngle;
         GetElevatorPositionChange(elevatorPreviousValue, elevatorCurrentValue);
 
