@@ -7,15 +7,9 @@ using UnityEngine.InputSystem;
 
 public class KeyboardControls : MonoBehaviour
 {
-    //private GameObject rudder;
-    private Button leftPedal;
-    private Button rightPedal;
-
     // Joystick
     private RectTransform joystickHandle; // Get the joystick Handle object
     private const float joystickRadius = 64f;
-
-    float keyboardDegrees = 20f;  // number of degrees to move a surface on keyboard press
 
     private PlayerControls controls;
 
@@ -23,10 +17,10 @@ public class KeyboardControls : MonoBehaviour
     {
         controls = new PlayerControls();
         // Rudder Keys
-        controls.KeyboardInput.RudderLeftDown.performed += context => LeftPedalDownKeyboard();// context cant be used to get input information
-        controls.KeyboardInput.RudderLeftUp.performed += context => LeftPedalUpKeyboard();  
-        controls.KeyboardInput.RudderRightDown.performed += context => RightPedalDownKeyboard(); 
-        controls.KeyboardInput.RudderRightUp.performed += context => RightPedalUpKeyboard();  
+        controls.KeyboardInput.RudderLeftDown.performed += context => ControlsUtilityMethods.LeftPedalDownKeyboard();// context cant be used to get input information
+        controls.KeyboardInput.RudderLeftUp.performed += context => ControlsUtilityMethods.LeftPedalUpKeyboard();  
+        controls.KeyboardInput.RudderRightDown.performed += context => ControlsUtilityMethods.RightPedalDownKeyboard(); 
+        controls.KeyboardInput.RudderRightUp.performed += context => ControlsUtilityMethods.RightPedalUpKeyboard();  
         // Elevator Keys                                                                                      
         controls.KeyboardInput.ElevatorsUp.performed += context => ButtonJoystickMoveElevators("down");  
         controls.KeyboardInput.ElevatorsDown.performed += context => ButtonJoystickMoveElevators("up");  
@@ -42,40 +36,12 @@ public class KeyboardControls : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        leftPedal = GameObject.Find("L_Pedal").GetComponent<Button>();
-        rightPedal = GameObject.Find("R_Pedal").GetComponent<Button>();
-
         // Joystick setup
         joystickHandle = GameObject.FindGameObjectWithTag("JoystickHandle").GetComponent<RectTransform>();
 
         controls.KeyboardInput.Enable();  // Start with the keyboard controls enabled
     }
 
-    //////////////////////////////////////////////////////////////////////
-    /////////////////////////// PEDALS //////////////////////////////////
-    ////////////////////////////////////////////////////////////////////
-
-    private void LeftPedalDownKeyboard()
-    {
-        ControlsUtilityMethods.PedalDown(leftPedal, keyboardDegrees);
-        ControlsUtilityMethods.PedalUp(rightPedal);
-    }
-
-    private void LeftPedalUpKeyboard()
-    {
-        ControlsUtilityMethods.PedalBothUp();
-    }
-
-    private void RightPedalDownKeyboard()
-    {
-        ControlsUtilityMethods.PedalDown(rightPedal, keyboardDegrees);
-        ControlsUtilityMethods.PedalUp(leftPedal);
-    }
-
-    private void RightPedalUpKeyboard()
-    {
-        ControlsUtilityMethods.PedalBothUp();
-    }
 
     //////////////////////////////////////////////////////////////////////
     ///////////////////////// JOYSTICK //////////////////////////////////
@@ -112,11 +78,11 @@ public class KeyboardControls : MonoBehaviour
         {
             joystickHandle.transform.localPosition = new Vector3(joystickCurrentX, yCoord, joystickCurrentZ);
         }
-        if (direction == "down")
+        else if (direction == "down")
         {
             joystickHandle.transform.localPosition = new Vector3(joystickCurrentX, -yCoord, joystickCurrentZ);
         }
-        if (direction == "reverse")
+        else if (direction == "reverse")
         {
             joystickHandle.transform.localPosition = new Vector3(joystickCurrentX, 0, joystickCurrentZ);
         }
@@ -139,11 +105,11 @@ public class KeyboardControls : MonoBehaviour
         {
             joystickHandle.transform.localPosition = new Vector3(xCoord, joystickCurrentY, joystickCurrentZ);
         }
-        if (direction == "down")
+        else if (direction == "down")
         {
             joystickHandle.transform.localPosition = new Vector3(-xCoord, joystickCurrentY, joystickCurrentZ);
         }
-        if (direction == "reverse")
+        else if (direction == "reverse")
         {
             joystickHandle.transform.localPosition = new Vector3(0, joystickCurrentY, joystickCurrentZ);
         }

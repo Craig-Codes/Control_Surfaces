@@ -22,10 +22,10 @@ public class UserInterfaceActions : MonoBehaviour
 
     // UI menu system
     private RectTransform infoPanel;
-    private static bool infoIsVisible;  // boolean used to see if infoPanel is visible. Static as script on many objects but we want one single truth
+    public static bool infoIsVisible;  // boolean used to see if infoPanel is visible. Static as script on many objects but we want one single truth
 
     private RectTransform controlsPanel;
-    private static bool controlsIsVisible;
+    public static bool controlsIsVisible;
 
     private RectTransform mouseControlsText;
     private RectTransform keyboardControlsImage;
@@ -40,7 +40,7 @@ public class UserInterfaceActions : MonoBehaviour
 
     // Popup secondary cameras
     private Vector3 scaleChange;
-    private float topScale = 2.2f;
+    private float topScale = 2.1f;
 
     private Color32 white = new Color32(255, 255, 255, 255); // Default colour over images - clear white
     private Color32 grey = new Color32(100, 100, 100, 255);  // Grey tint over images, used when selected
@@ -347,7 +347,33 @@ public class UserInterfaceActions : MonoBehaviour
 
     public void OnMouseClickReset()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);  // Resets the current scene
+        //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);  // Resets the current scene
+ 
+        // Rotate control surfaces back to starting locations
+        ControlSurfaces.rudder.Rotate(ControlSurfaces.rudder.GetStartingRotations());
+        ControlSurfaces.rightAileron.Rotate(ControlSurfaces.rightAileron.GetStartingRotations());
+        ControlSurfaces.leftAileron.Rotate(ControlSurfaces.leftAileron.GetStartingRotations());
+        ControlSurfaces.rightElevator.Rotate(ControlSurfaces.rightElevator.GetStartingRotations());
+        ControlSurfaces.leftElevator.Rotate(ControlSurfaces.leftElevator.GetStartingRotations());
+
+        // Get the joystick and move it back to the center
+        var joystickHandle = GameObject.FindGameObjectWithTag("JoystickHandle").GetComponent<RectTransform>();
+        joystickHandle.transform.localPosition = new Vector3(0, 0, 0);
+
+        // Move aircraft back to starting position
+        AircraftMovement.aircraft.ResetAircraft();
+
+        // Reset UI elements
+        infoIsVisible = false;
+        cockpitIsFull = false;
+        CockpitPositionChange();
+        chaseIsFull = false;
+        ChasePositionChange();
+        controlsIsVisible = false;
+
+        infoPanel.localScale = Vector3.zero;
+        controlsPanel.localScale = Vector3.zero;  // hide panel
+
     }
 
     public void ShowHideControlSurfaceDescriptions()

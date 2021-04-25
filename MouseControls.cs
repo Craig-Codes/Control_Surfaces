@@ -13,7 +13,6 @@ public class MouseControls : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
     private Button leftPedal;
     private Button rightPedal;
 
-
     private float mouseDegrees = 20f;  // number of degrees to move a surface on keyboard press
 
     void Awake()

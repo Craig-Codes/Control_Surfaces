@@ -6,8 +6,8 @@ using UnityEngine.UI;
 public class AircraftMovement : MonoBehaviour
 {
     private GameObject aircraftObject;
-    static Aircraft aircraft;
-    class Aircraft
+    public static Aircraft aircraft;
+    public class Aircraft
     {
         internal GameObject aircraft;  // Reference to the GameObject manipulated by the class - internal means can be seen in derived classes
         internal Slider uiSlider;
@@ -17,6 +17,12 @@ public class AircraftMovement : MonoBehaviour
         GameObject rudder;
         GameObject rightAileron;
         GameObject rightElevator;
+        GameObject cloudPivot;
+
+        float startPosX;
+        float startPosY;
+        float startPosZ;
+        float startPosW;
 
         public Aircraft(GameObject aircraft)
         {
@@ -28,6 +34,13 @@ public class AircraftMovement : MonoBehaviour
             this.rudder = GameObject.Find("Rudder");
             this.rightAileron = GameObject.Find("R_Aileron");
             this.rightElevator = GameObject.Find("RightElevator");
+            this.cloudPivot = GameObject.Find("CloudPivot");
+
+            this.startPosX = aircraft.transform.rotation.x;
+            this.startPosY = aircraft.transform.rotation.y;
+            this.startPosZ = aircraft.transform.rotation.z;
+            this.startPosW = aircraft.transform.rotation.w;
+
         }
 
         private float WrapAngle(float angle)
@@ -68,6 +81,25 @@ public class AircraftMovement : MonoBehaviour
             AxisRotate(roll, Vector3.right, Vector3.left);
             AxisRotate(yaw, Vector3.back, Vector3.forward);
         }
+
+        // Rotate clouds based on aircrafts Z rotation movement, so they are always moving towards aircraft, making it appear to always be travelling forward
+        public void RotateClouds()
+        {
+            float rudderInspectorFloat = WrapAngle(this.rudder.transform.localEulerAngles.z); // current aircraft Z rotation
+            if (rudderInspectorFloat >= 1)
+            {
+                this.cloudPivot.transform.localRotation *= Quaternion.AngleAxis((rudderInspectorFloat / 3) * sliderValue * Time.deltaTime, Vector3.back);
+            }
+            else if (rudderInspectorFloat < 0)
+            {
+                this.cloudPivot.transform.localRotation *= Quaternion.AngleAxis((-rudderInspectorFloat / 3) * sliderValue * Time.deltaTime, Vector3.forward);
+            }
+        }
+
+        public void ResetAircraft()
+        {
+            this.aircraft.transform.rotation = new Quaternion(startPosX, startPosY, startPosZ, startPosW);
+        }
     }
     void Start()
     {
@@ -80,5 +112,6 @@ public class AircraftMovement : MonoBehaviour
     void Update()
     {
        aircraft.RotateAxis();  // Rotate the aircraft depending on the control surface settings
+       aircraft.RotateClouds(); // Rotate cloud pivot based on aircrafts Z axis (yaw)
     }
 }

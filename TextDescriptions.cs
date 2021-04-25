@@ -2,11 +2,17 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TextDescriptions : MonoBehaviour
 {
 
     private TextMeshProUGUI controlInputDescription;
+    private Image controlInputDescriptionBackground;
+
+    // variables from UI script
+    private bool infoIsVisible;
+    private bool controlsIsVisible;
 
     // Reference to control surface objects
     ControlSurfaces.Rudder rudder;
@@ -58,6 +64,12 @@ public class TextDescriptions : MonoBehaviour
                 controlInputDescription = element;
             }
         }
+
+        // Get the UI image background
+        controlInputDescriptionBackground = GameObject.Find("ControlsDescriptionBackground").GetComponent<Image>();
+
+        infoIsVisible = UserInterfaceActions.infoIsVisible;
+        controlsIsVisible = UserInterfaceActions.controlsIsVisible;
     }
 
     // Update is called once per frame
@@ -88,10 +100,46 @@ public class TextDescriptions : MonoBehaviour
     // Generate the string based on control surfaces movement
     private void TextOutput()
     {
-        controlInputDescription.text =
-     $"{elevatorString}\n" +
-     $"{aileronString}\n" +
-     $"{rudderString}\n";
+        // If nothing else is visible on screen
+        infoIsVisible = UserInterfaceActions.infoIsVisible;
+        controlsIsVisible = UserInterfaceActions.controlsIsVisible;
+        if (controlsIsVisible || infoIsVisible)
+        {
+            // Hide text and background if no deflection
+            controlInputDescription.alpha = 0;
+            controlInputDescriptionBackground.enabled = false;
+        }
+        // If a surface is deflecting, show text to explain what is going on to user
+        else if (SurfaceIsDeflecting()) {
+            controlInputDescription.text =
+             $"{elevatorString}\n" +
+             $"{aileronString}\n" +
+             $"{rudderString}\n";
+
+            // show the text and background
+            controlInputDescription.alpha = 1;
+            controlInputDescriptionBackground.enabled = true;
+        }
+        else
+        {
+            // Hide text and background if no deflection
+            controlInputDescription.alpha = 0;
+            controlInputDescriptionBackground.enabled = false;
+        }
+    }
+
+    // Function detects if any of the surfaces are currently deflecting, returning a bool
+    private bool SurfaceIsDeflecting()
+    {
+        // If angles are between -1 and 1, then surface is not reflecting
+        if (rudderZAngle > -1 && rudderZAngle < 1 && elevatorYAngle > -1 && elevatorYAngle < 1 && aileronYAngle > -1 && aileronYAngle < 1)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }   
     }
 
     private void GetRudderPositionChange(float start, float current)
@@ -102,11 +150,11 @@ public class TextDescriptions : MonoBehaviour
         }
         else if(current > 1)
         {
-            rudderString = "The rudder is deflecting to starboard";
+            rudderString = "The rudder is deflecting to the right";
         }
         else
         {
-            rudderString = "The rudder is deflecting to port";
+            rudderString = "The rudder is deflecting to the left";
         }
     }
 
@@ -118,11 +166,11 @@ public class TextDescriptions : MonoBehaviour
         }
         else if (current > 1)
         {
-            aileronString = "Portside Aileron is deflecting downwards, starboard is deflecting upwards";
+            aileronString = "Left Aileron is deflecting downwards, right Aileron is deflecting upwards";
         }
         else
         {
-            aileronString = "Portside Aileron is deflecting upwards, starboard is deflecting downwards";
+            aileronString = "Left Aileron is deflecting upwards, right Aileron is deflecting downwards";
         }
     }
 

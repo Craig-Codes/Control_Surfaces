@@ -5,7 +5,7 @@ using UnityEngine;
 
 // Script is used for all shared Methods and variables across the control scripts
 // This script interacts with the actual control surface objects, based on commands from the control type scripts
-public class ControlsUtilityMethods
+public static class ControlsUtilityMethods
 {
     private static Button leftPedal = GameObject.Find("L_Pedal").GetComponent<Button>();
     private static Button rightPedal = GameObject.Find("R_Pedal").GetComponent<Button>();
@@ -19,6 +19,8 @@ public class ControlsUtilityMethods
     public static float joystickX, joystickY;
 
    static Vector2 currentJoystickCoords;
+
+    private const float buttonPressDegrees = 20f;
 
     static float degreesPerJoystickMove = 0.3125f;
     /* Joystick moves from +64 / -64 on both x and y axis
@@ -41,8 +43,28 @@ public class ControlsUtilityMethods
     static Vector3 rightAileronStartingRotations = rightAileron.GetStartingRotations();
     static Vector3 leftAileronStartingRotations = leftAileron.GetStartingRotations();
 
-        // Get each surfaces starting positions
- 
+    // Get each surfaces starting positions
+    public static void LeftPedalDownKeyboard()
+    {
+        PedalDown(leftPedal, buttonPressDegrees);
+        PedalUp(rightPedal);
+    }
+
+    public static void LeftPedalUpKeyboard()
+    {
+        PedalBothUp();
+    }
+
+    public static void RightPedalDownKeyboard()
+    {
+        PedalDown(rightPedal, buttonPressDegrees);
+        PedalUp(leftPedal);
+    }
+
+    public static void RightPedalUpKeyboard()
+    {
+        PedalBothUp();
+    }
 
     public static void PedalDown(Button pedal, float degrees) // Rotate Rudder based on pedal pressed by input type
     {
@@ -76,7 +98,6 @@ public class ControlsUtilityMethods
     ///////////////////////// JOYSTICK //////////////////////////////////
     ////////////////////////////////////////////////////////////////////
 
- 
     public static void RotateSurfaces()
     {
         GetCurrentJoystickCoords();
