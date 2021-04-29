@@ -374,6 +374,10 @@ public class UserInterfaceActions : MonoBehaviour
         infoPanel.localScale = Vector3.zero;
         controlsPanel.localScale = Vector3.zero;  // hide panel
 
+        // Reset the airspeed needle
+        var uiSlider = GameObject.FindObjectOfType<Slider>();
+        uiSlider.value = 2f;
+
     }
 
     public void ShowHideControlSurfaceDescriptions()

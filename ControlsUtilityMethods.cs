@@ -36,12 +36,17 @@ public static class ControlsUtilityMethods
     static ControlSurfaces.Surface rightAileron = ControlSurfaces.rightAileron;
     static ControlSurfaces.Surface leftElevator = ControlSurfaces.leftElevator;
     static ControlSurfaces.Surface rightElevator = ControlSurfaces.rightElevator;
+    static ControlSurfaces.Surface leftFlap = ControlSurfaces.leftFlap;
+    static ControlSurfaces.Surface rightFlap = ControlSurfaces.rightFlap;
 
     static Vector3 rudderStartingRotations = rudder.GetStartingRotations();
     static Vector3 rightElevatorStartingRotations = rightElevator.GetStartingRotations();
     static Vector3 leftElevatorStartingRotations = leftElevator.GetStartingRotations();
     static Vector3 rightAileronStartingRotations = rightAileron.GetStartingRotations();
     static Vector3 leftAileronStartingRotations = leftAileron.GetStartingRotations();
+
+    static Vector3 rightFlapStartingRotations = rightFlap.GetStartingRotations();
+    static Vector3 leftFlapStartingRotations = leftFlap.GetStartingRotations();
 
     // Get each surfaces starting positions
     public static void LeftPedalDownKeyboard()
@@ -103,6 +108,7 @@ public static class ControlsUtilityMethods
         GetCurrentJoystickCoords();
         MoveElevators();
         MoveAilerons();
+        MoveFlaps();
     }
 
     private static void GetCurrentJoystickCoords()  // Get the coords from the Joystick.cs script each time the joystick is moved.
@@ -129,6 +135,20 @@ public static class ControlsUtilityMethods
         leftAileron.Rotate(leftAileronRotation);
         var rightAileronRotation = new Vector3(rightAileronStartingRotations.x, degrees, rightAileronStartingRotations.z);
         rightAileron.Rotate(rightAileronRotation);
+    }
+
+    private static void MoveFlaps()
+    {
+        // degrees = slider value * something!
+
+        // Just need to move the slider value in the control scripts, then evertyhting will update from here automatically
+        // flap moves down, the more it moves down the more lift
+        // STart at 0 - As move down, aircraft goes up more! 0degrees, 10degrees, 20 degrees
+        float degrees = 10f;
+        var leftFlapRotation = new Vector3(leftFlapStartingRotations.x, -degrees, leftFlapStartingRotations.z);
+        leftFlap.Rotate(leftFlapRotation);
+        var rightFlapRotation = new Vector3(rightFlapStartingRotations.x, -degrees, rightFlapStartingRotations.z);
+        rightFlap.Rotate(rightFlapRotation);
     }
 }
 

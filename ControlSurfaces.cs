@@ -10,6 +10,8 @@ public class ControlSurfaces : MonoBehaviour
     public static Surface rightElevator;
     public static Surface leftAileron;
     public static Surface rightAileron;
+    public static Surface leftFlap;
+    public static Surface rightFlap;
 
     // Control Surface References used to instantiate objects:
     private GameObject rudderObject;
@@ -17,6 +19,8 @@ public class ControlSurfaces : MonoBehaviour
     private GameObject rightElevatorObject;
     private GameObject leftAileronObject;
     private GameObject rightAileronObject;
+    private GameObject leftFlapObject;
+    private GameObject rightFlapObject;
 
     public class Surface
     {
@@ -70,6 +74,7 @@ public class ControlSurfaces : MonoBehaviour
         }
     }
 
+
     void Awake()
     {
         // Rudder
@@ -87,5 +92,12 @@ public class ControlSurfaces : MonoBehaviour
         leftAileron = new Surface(leftAileronObject);
         rightAileronObject = GameObject.Find("R_Aileron");
         rightAileron = new Surface(rightAileronObject);
+
+        //Flaps
+        leftFlapObject = GameObject.Find("L_Flap");
+        leftFlap = new Surface(leftFlapObject);
+        rightFlapObject = GameObject.Find("R_Flap");
+        rightFlap = new Surface(rightFlapObject);
+
     }
 }

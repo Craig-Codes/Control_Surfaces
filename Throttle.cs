@@ -69,9 +69,7 @@ public class Throttle : MonoBehaviour
     private void MoveAirspeedNeedle(float sliderValue)
     {
         float newSpeedNeedleValue = sliderValue * 142;
-        Debug.Log(airspeedNeedle.anchoredPosition);
         airspeedNeedle.anchoredPosition = new Vector2(airspeedNeedle.anchoredPosition.x, newSpeedNeedleValue);  // 142 * throttle number of 1-3 corresponds to needle x axis position
-        Debug.Log(airspeedNeedle.anchoredPosition);
     }
 
 
