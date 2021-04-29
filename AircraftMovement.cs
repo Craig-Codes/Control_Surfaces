@@ -5,13 +5,16 @@ using UnityEngine.UI;
 
 public class AircraftMovement : MonoBehaviour
 {
+    public Slider uiSlider;
     private GameObject aircraftObject;
     public static Aircraft aircraft;
+ 
+
     public class Aircraft
     {
         internal GameObject aircraft;  // Reference to the GameObject manipulated by the class - internal means can be seen in derived classes
-        internal Slider uiSlider;
         internal float sliderValue;
+        internal Slider throttleSlider;
 
         // Access to the control surfaces
         GameObject rudder;
@@ -24,11 +27,11 @@ public class AircraftMovement : MonoBehaviour
         float startPosZ;
         float startPosW;
 
-        public Aircraft(GameObject aircraft)
+        public Aircraft(GameObject aircraft, Slider throttleSlider)
         {
             this.aircraft = aircraft;  // pass in the Surface gameobject
-            this.uiSlider = GameObject.FindObjectOfType<Slider>();
-            this.sliderValue = uiSlider.value;
+            this.throttleSlider = throttleSlider;
+            this.sliderValue = throttleSlider.value;
 
             // Assign the control surfaces
             this.rudder = GameObject.Find("Rudder");
@@ -67,7 +70,7 @@ public class AircraftMovement : MonoBehaviour
 
         public void RotateAxis()
         {
-            sliderValue = uiSlider.value;
+            sliderValue = throttleSlider.value;
             // Get all of the control surfaces relevant angles
             float rudderInspectorFloat = WrapAngle(this.rudder.transform.localEulerAngles.z);
             float aileronInspectorFloat = WrapAngle(this.rightAileron.transform.localEulerAngles.y);
@@ -96,16 +99,19 @@ public class AircraftMovement : MonoBehaviour
             }
         }
 
+
         public void ResetAircraft()
         {
             this.aircraft.transform.rotation = new Quaternion(startPosX, startPosY, startPosZ, startPosW);
         }
+
+
     }
     void Start()
     {
         // Create the aircraft object
         aircraftObject = GameObject.Find("AircraftPivot");
-        aircraft = new Aircraft(aircraftObject);
+        aircraft = new Aircraft(aircraftObject, uiSlider);
     }
 
     // Update is called once per frame

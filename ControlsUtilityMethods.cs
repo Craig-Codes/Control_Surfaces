@@ -108,7 +108,6 @@ public static class ControlsUtilityMethods
         GetCurrentJoystickCoords();
         MoveElevators();
         MoveAilerons();
-        MoveFlaps();
     }
 
     private static void GetCurrentJoystickCoords()  // Get the coords from the Joystick.cs script each time the joystick is moved.
@@ -137,18 +136,5 @@ public static class ControlsUtilityMethods
         rightAileron.Rotate(rightAileronRotation);
     }
 
-    private static void MoveFlaps()
-    {
-        // degrees = slider value * something!
-
-        // Just need to move the slider value in the control scripts, then evertyhting will update from here automatically
-        // flap moves down, the more it moves down the more lift
-        // STart at 0 - As move down, aircraft goes up more! 0degrees, 10degrees, 20 degrees
-        float degrees = 10f;
-        var leftFlapRotation = new Vector3(leftFlapStartingRotations.x, -degrees, leftFlapStartingRotations.z);
-        leftFlap.Rotate(leftFlapRotation);
-        var rightFlapRotation = new Vector3(rightFlapStartingRotations.x, -degrees, rightFlapStartingRotations.z);
-        rightFlap.Rotate(rightFlapRotation);
-    }
 }
 

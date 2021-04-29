@@ -9,7 +9,7 @@ using UnityEngine.InputSystem;
 public class Throttle : MonoBehaviour
 {
 
-    private Slider uiSlider;
+    public Slider throttleSlider;  // slider added to script via Unity Engine Inspector
     private RectTransform airspeedNeedle;
 
     // const variables are set at compile time
@@ -31,9 +31,8 @@ public class Throttle : MonoBehaviour
     void Start()
     {
         controls.ControllerInput.Enable();  // Start with the keyboard controls enabled
-        uiSlider = GameObject.FindObjectOfType<Slider>();
-        uiSlider.minValue = sliderMinValue;  // Slider max value (top) is 3
-        uiSlider.maxValue = sliderMaxValue;  // Slider min value (bottom) is 1
+        throttleSlider.minValue = sliderMinValue;  // Slider max value (top) is 3
+        throttleSlider.maxValue = sliderMaxValue;  // Slider min value (bottom) is 1
         airspeedNeedle = GameObject.FindGameObjectWithTag("SpeedNeedle").GetComponent<RectTransform>();
     }
 
@@ -42,27 +41,27 @@ public class Throttle : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.W))  // Faster
         {
-            uiSlider.value += sliderIncrementValue;
+            throttleSlider.value += sliderIncrementValue;
         }
     
         if (Input.GetKeyDown(KeyCode.X))  // Slower
         {
-            uiSlider.value -= sliderIncrementValue;
+            throttleSlider.value -= sliderIncrementValue;
         }
 
         UpdateClouds(); // update the cloud movement speed based on throttle movement
-        MoveAirspeedNeedle(uiSlider.value);  // Move pointer in relation to throttle slider value
+        MoveAirspeedNeedle(throttleSlider.value);  // Move pointer in relation to throttle slider value
     }
 
-    private void UpdateClouds()
+    public void UpdateClouds()
     {
             foreach (ParticleSystem cloud in particleList)
             {
                 ParticleSystem.VelocityOverLifetimeModule velocity = cloud.velocityOverLifetime;
-                velocity.speedModifier = uiSlider.value;  // between 1 and 3
+                velocity.speedModifier = throttleSlider.value;  // between 1 and 3
 
                 ParticleSystem.EmissionModule emission = cloud.emission;
-                emission.rateOverTime = (uiSlider.value / 10) * 5;
+                emission.rateOverTime = (throttleSlider.value / 10) * 5;
             }
     }
 
@@ -76,7 +75,7 @@ public class Throttle : MonoBehaviour
     private void MoveUiThrottle(Vector2 context)
     {
         Vector2 leftStickCoords = context;
-        uiSlider.value = leftStickCoords.y + 2;
+        throttleSlider.value = leftStickCoords.y + 2;
     }
 
 }

@@ -57,6 +57,7 @@ public class UserInterfaceActions : MonoBehaviour
 
     private static bool imageResize = false; // boolean value used as a flag for when we want an image to be able to resize
 
+    public Slider throttleSlider;
 
     void Start()
     {
@@ -375,8 +376,7 @@ public class UserInterfaceActions : MonoBehaviour
         controlsPanel.localScale = Vector3.zero;  // hide panel
 
         // Reset the airspeed needle
-        var uiSlider = GameObject.FindObjectOfType<Slider>();
-        uiSlider.value = 2f;
+        throttleSlider.value = 2f;
 
     }
 
