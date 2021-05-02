@@ -24,7 +24,7 @@ public class FlapsSlider : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        MoveFlaps();
+        MoveFlaps();  // Move the flaps based on the current slider value
     }
 
     public void MoveFlaps()
@@ -32,7 +32,7 @@ public class FlapsSlider : MonoBehaviour
        // Flaps are only moved at low speed, so firstly ensure airspeed is low
        if(throttleSlider.value <= 1)
         {
-            float degrees = flapsSlider.value * 10;  // either zero, one or two, so 0, 10 or 20 degrees
+            float degrees = flapsSlider.value * 5;  // either zero, one or two, so 0, 10 or 20 degrees
             var leftFlapRotation = new Vector3(leftFlapStartingRotations.x, -degrees, leftFlapStartingRotations.z);
             leftFlap.Rotate(leftFlapRotation);
             var rightFlapRotation = new Vector3(rightFlapStartingRotations.x, -degrees, rightFlapStartingRotations.z);
@@ -40,7 +40,11 @@ public class FlapsSlider : MonoBehaviour
         }
         else
         {
-            flapsSlider.value = 0;
+            flapsSlider.value = 0;  // Reset the flaps slider back to top
+            var leftFlapRotation = new Vector3(leftFlapStartingRotations.x, 0, leftFlapStartingRotations.z);
+            leftFlap.Rotate(leftFlapRotation);
+            var rightFlapRotation = new Vector3(rightFlapStartingRotations.x, 0, rightFlapStartingRotations.z);
+            rightFlap.Rotate(rightFlapRotation);
         }
 
     }

@@ -6,6 +6,8 @@ using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using TMPro;
 
+
+// Script deals with the Menu system
 public class UserInterfaceActions : MonoBehaviour
 {
     // Mouse pointer images
@@ -58,9 +60,37 @@ public class UserInterfaceActions : MonoBehaviour
     private static bool imageResize = false; // boolean value used as a flag for when we want an image to be able to resize
 
     public Slider throttleSlider;
+    public Slider flapSlider;
+
+    private Button startSelectedButton;  // Used to start a button selected, so that keyboard users can scroll correctly
+
+    // List of control instruction buttons, so that they can all be operated on together
+    private List<Button> controllerButtons = new List<Button>();
+
+    private static Button mouseButton;
+    private static Button keyboardButton;
+    private static Button gamepadButton;
+
+    private static PlayerControls controlsSchema;
+
+    // Currently selected UI Button
+    private static GameObject currentSelected;
+
+    private void Awake()
+    {
+        // Select UI Button
+        controlsSchema = new PlayerControls();
+        controlsSchema.KeyboardInput.ButtonSelect.performed += context => OnButtonSelect();
+
+        mouseButton = GameObject.Find("Mouse").GetComponent<Button>();
+        keyboardButton = GameObject.Find("Keyboard").GetComponent<Button>();
+        gamepadButton = GameObject.Find("Gamepad").GetComponent<Button>();
+    }
 
     void Start()
     {
+        controlsSchema.KeyboardInput.Enable();  // Start with the keyboard controls enabled
+
         infoPanel = GameObject.FindGameObjectWithTag("InfoPanel").GetComponent<RectTransform>();  // Get the Info Panel
         infoPanel.localScale = Vector3.zero;
         infoIsVisible = false;
@@ -69,6 +99,9 @@ public class UserInterfaceActions : MonoBehaviour
         controlsPanel.localScale = Vector3.zero;
         controlsIsVisible = false;
 
+        startSelectedButton = GameObject.Find("Info_Button").GetComponent<Button>(); ;
+
+        startSelectedButton.Select();  // start off with the info button selected
 
         // Get the TextMeshPro via code
         var textArray = FindObjectsOfType<TextMeshProUGUI>();
@@ -96,6 +129,13 @@ public class UserInterfaceActions : MonoBehaviour
         chaseView = GameObject.FindGameObjectWithTag("BehindView").GetComponent<RawImage>();
         chaseIsFull = false;
         chaseViewLarge = GameObject.FindGameObjectWithTag("BehindViewLarge").GetComponent<RectTransform>();
+
+        // push buttons we want to operate on togher into a list
+        controllerButtons.Add(mouseButton);
+        controllerButtons.Add(keyboardButton);
+        controllerButtons.Add(gamepadButton);
+   
+        ShowControllerButtons(false);  // Loop through list and start buttons as disabled so user cannot scroll to them
     }
 
     private void Update()
@@ -254,6 +294,18 @@ public class UserInterfaceActions : MonoBehaviour
 
     }
 
+    public void OnMouseEnterFlap()
+    {
+        if (throttleSlider.value <= 1)
+        {
+            Cursor.SetCursor(defaultPointer, customOffset, cursorMode);
+        }
+        else
+        {
+            Cursor.SetCursor(quit, customOffset, cursorMode);
+        }
+    }
+
     public void OnMouseEnterGeneric()
     {
         Cursor.SetCursor(defaultPointer, customOffset, cursorMode);
@@ -270,7 +322,6 @@ public class UserInterfaceActions : MonoBehaviour
     {
         controlsPanel.localScale = Vector3.zero;  // close the controls panel if its open
         controlsIsVisible = false;
-
         if (infoIsVisible)
         {
             Cursor.SetCursor(quit, customOffset, cursorMode);
@@ -299,6 +350,7 @@ public class UserInterfaceActions : MonoBehaviour
             controlsPanel.localScale = Vector3.zero;  // hide panel
             Cursor.SetCursor(controls, customOffset, cursorMode);
             controlsIsVisible = false;
+            ShowControllerButtons(false);
         }
         else
         {
@@ -306,6 +358,7 @@ public class UserInterfaceActions : MonoBehaviour
             controlsPanel.localScale = uiPanelScale; // show panel
             Cursor.SetCursor(quit, customOffset, cursorMode);
             controlsIsVisible = true;
+            ShowControllerButtons(true);
         }
         ShowHideControlSurfaceDescriptions();
     }
@@ -378,6 +431,11 @@ public class UserInterfaceActions : MonoBehaviour
         // Reset the airspeed needle
         throttleSlider.value = 2f;
 
+        // Reset the flaps slider
+        flapSlider.value = 0;
+
+        ShowControllerButtons(false); // reset buttons so that correct ones are hidden
+
     }
 
     public void ShowHideControlSurfaceDescriptions()
@@ -392,5 +450,52 @@ public class UserInterfaceActions : MonoBehaviour
             controlInputDescription.alpha = 1;
         }
 
+    }
+
+    // Go thorugh each button in the list and allow it to be interactable / not interactable
+    private void ShowControllerButtons(bool value)
+    {
+        foreach (Button button in controllerButtons)
+        {
+            button.interactable = value;
+        }
+    }
+
+    // Button Selection Switch statment to control what happens when a UI Button is selected with the keyboard
+    private void OnButtonSelect()
+    {
+        currentSelected = EventSystem.current.currentSelectedGameObject;
+
+        switch (currentSelected.name)
+        {
+            case "Reset_Button":
+                OnMouseClickReset();
+                break;
+            case "Info_Button":
+                OnMouseClickInfo();
+                break;
+            case "Controls_Button":
+                OnMouseClickControls();
+                break;
+            case "Mouse":
+                OnMouseClickMouse();
+                break;
+            case "Keyboard":
+                OnMouseClickKeyboard();
+                break;
+            case "Gamepad":
+                OnMouseClickGamepad();
+                break;
+            case "CockpitImage":
+                CockpitActions();
+                CockpitPositionChange();
+                break;
+            case "BackImage":
+                ChaseActions();
+                ChasePositionChange();
+                break;
+            default:
+                break;
+        }
     }
 }

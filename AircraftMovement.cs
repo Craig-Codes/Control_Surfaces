@@ -13,7 +13,7 @@ public class AircraftMovement : MonoBehaviour
     public class Aircraft
     {
         internal GameObject aircraft;  // Reference to the GameObject manipulated by the class - internal means can be seen in derived classes
-        internal float sliderValue;
+        internal float rotationLogFigure;
         internal Slider throttleSlider;
 
         // Access to the control surfaces
@@ -31,7 +31,7 @@ public class AircraftMovement : MonoBehaviour
         {
             this.aircraft = aircraft;  // pass in the Surface gameobject
             this.throttleSlider = throttleSlider;
-            this.sliderValue = throttleSlider.value;
+            this.rotationLogFigure = throttleSlider.value;
 
             // Assign the control surfaces
             this.rudder = GameObject.Find("Rudder");
@@ -59,18 +59,18 @@ public class AircraftMovement : MonoBehaviour
         {
             if (axis >= 1)
             {
-                this.aircraft.transform.localRotation *= Quaternion.AngleAxis((axis / 3) * sliderValue * Time.deltaTime, directionOne);
+                this.aircraft.transform.localRotation *= Quaternion.AngleAxis((axis / 3) * rotationLogFigure * Time.deltaTime, directionOne);
             }
             else if (axis < 0)
             {
-                this.aircraft.transform.localRotation *= Quaternion.AngleAxis((-axis / 3) * sliderValue * Time.deltaTime, directionTwo);
+                this.aircraft.transform.localRotation *= Quaternion.AngleAxis((-axis / 3) * rotationLogFigure * Time.deltaTime, directionTwo);
             }
 
         }
 
         public void RotateAxis()
         {
-            sliderValue = throttleSlider.value;
+            rotationLogFigure = RotationSpeedLogCalc();
             // Get all of the control surfaces relevant angles
             float rudderInspectorFloat = WrapAngle(this.rudder.transform.localEulerAngles.z);
             float aileronInspectorFloat = WrapAngle(this.rightAileron.transform.localEulerAngles.y);
@@ -91,12 +91,18 @@ public class AircraftMovement : MonoBehaviour
             float rudderInspectorFloat = WrapAngle(this.rudder.transform.localEulerAngles.z); // current aircraft Z rotation
             if (rudderInspectorFloat >= 1)
             {
-                this.cloudPivot.transform.localRotation *= Quaternion.AngleAxis((rudderInspectorFloat / 3) * sliderValue * Time.deltaTime, Vector3.back);
+                this.cloudPivot.transform.localRotation *= Quaternion.AngleAxis((rudderInspectorFloat / 3) * rotationLogFigure * Time.deltaTime, Vector3.back);
             }
             else if (rudderInspectorFloat < 0)
             {
-                this.cloudPivot.transform.localRotation *= Quaternion.AngleAxis((-rudderInspectorFloat / 3) * sliderValue * Time.deltaTime, Vector3.forward);
+                this.cloudPivot.transform.localRotation *= Quaternion.AngleAxis((-rudderInspectorFloat / 3) * rotationLogFigure * Time.deltaTime, Vector3.forward);
             }
+        }
+
+        // Logorithmic maths to get aircraft to rotate in a logorithmic speed curve, based on throttle slider figure (1 to 3).
+        private float RotationSpeedLogCalc()
+        {
+            return throttleSlider.value;
         }
 
 

@@ -13,6 +13,8 @@ public class KeyboardControls : MonoBehaviour
 
     private PlayerControls controls;
 
+    public Slider flapSlider;
+
     void Awake()
     {
         controls = new PlayerControls();
@@ -30,8 +32,10 @@ public class KeyboardControls : MonoBehaviour
         controls.KeyboardInput.AileronsUp.performed += context => ButtonJoystickMoveAilerons("up"); 
         controls.KeyboardInput.AileronsDown.performed += context => ButtonJoystickMoveAilerons("down"); 
         controls.KeyboardInput.AileronsUpReverse.performed += context => ButtonJoystickMoveAilerons("reverse"); 
-        controls.KeyboardInput.AileronsDownReverse.performed += context => ButtonJoystickMoveAilerons("reverse");  
-
+        controls.KeyboardInput.AileronsDownReverse.performed += context => ButtonJoystickMoveAilerons("reverse");
+        // Flaps Keys
+        controls.KeyboardInput.FlapsDown.performed += context => MoveFlapsDown();
+        controls.KeyboardInput.FlapsUp.performed += context => MoveFlapsUp();
     }
     // Start is called before the first frame update
     void Start()
@@ -114,5 +118,19 @@ public class KeyboardControls : MonoBehaviour
             joystickHandle.transform.localPosition = new Vector3(0, joystickCurrentY, joystickCurrentZ);
         }
         ControlsUtilityMethods.RotateSurfaces();  // rotate surfaces based on joystick location
+    }
+
+    //////////////////////////////////////////////////////////
+    ////////////////////// FLAPS /////////////////////////////
+    //////////////////////////////////////////////////////////
+    public void MoveFlapsDown()
+    {
+        // Move the Flaps slider value, the flapsSlider script then deals with the rest
+        flapSlider.value -= 1;
+    }
+
+    public void MoveFlapsUp()
+    {
+        flapSlider.value += 1;
     }
 }
