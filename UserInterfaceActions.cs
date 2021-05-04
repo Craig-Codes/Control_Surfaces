@@ -75,6 +75,7 @@ public class UserInterfaceActions : MonoBehaviour
 
     // Currently selected UI Button
     private static GameObject currentSelected;
+    public static bool fullUiButtonList = false;
 
     private void Awake()
     {
@@ -99,7 +100,7 @@ public class UserInterfaceActions : MonoBehaviour
         controlsPanel.localScale = Vector3.zero;
         controlsIsVisible = false;
 
-        startSelectedButton = GameObject.Find("Info_Button").GetComponent<Button>(); ;
+        startSelectedButton = GameObject.Find("Info_Button").GetComponent<Button>();
 
         startSelectedButton.Select();  // start off with the info button selected
 
@@ -435,7 +436,6 @@ public class UserInterfaceActions : MonoBehaviour
         flapSlider.value = 0;
 
         ShowControllerButtons(false); // reset buttons so that correct ones are hidden
-
     }
 
     public void ShowHideControlSurfaceDescriptions()
@@ -455,6 +455,16 @@ public class UserInterfaceActions : MonoBehaviour
     // Go thorugh each button in the list and allow it to be interactable / not interactable
     private void ShowControllerButtons(bool value)
     {
+        // If items are to be shown, change bool to true, else make it false. Other scripts use this bool to trigger events.
+        if (value)
+        {
+            fullUiButtonList = true;
+        }
+        else
+        {
+            fullUiButtonList = false;
+        }
+
         foreach (Button button in controllerButtons)
         {
             button.interactable = value;
