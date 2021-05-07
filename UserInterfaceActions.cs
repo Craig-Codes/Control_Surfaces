@@ -44,9 +44,6 @@ public class UserInterfaceActions : MonoBehaviour
     private Vector3 scaleChange;
     private float topScale = 2.1f;
 
-    private Color32 white = new Color32(255, 255, 255, 255); // Default colour over images - clear white
-    private Color32 grey = new Color32(100, 100, 100, 255);  // Grey tint over images, used when selected
-
     private RawImage cockpitView;  // Access the image
     static private bool cockpitIsFull = false;  // Have more than one of this script, need one true source!!! Shared by all instances of the class
     private Vector3 cockpitPositionChange;  // Position change per tick on update
@@ -64,24 +61,32 @@ public class UserInterfaceActions : MonoBehaviour
 
     private Button startSelectedButton;  // Used to start a button selected, so that keyboard users can scroll correctly
 
-    // List of control instruction buttons, so that they can all be operated on together
-    private List<Button> controllerButtons = new List<Button>();
-
     private static Button mouseButton;
     private static Button keyboardButton;
     private static Button gamepadButton;
 
     private static PlayerControls controlsSchema;
+    private static PlayerControls gamepadSchema;
 
     // Currently selected UI Button
     private static GameObject currentSelected;
-    public static bool fullUiButtonList = false;
+
+    // Array of UI button gameobjects so that we can scroll through them. All UI buttons have been tagged as 'UiButton' in Unity Engine
+    private static List<Button> uiButtons = new List<Button>();
+    private static List<Button> nonUiButtons = new List<Button>();
+
+    private static int menuCounter;
 
     private void Awake()
     {
         // Select UI Button
         controlsSchema = new PlayerControls();
+        gamepadSchema = new PlayerControls();
         controlsSchema.KeyboardInput.ButtonSelect.performed += context => OnButtonSelect();
+        gamepadSchema.ControllerInput.SelectMenu.performed += context => OnButtonSelect();
+        gamepadSchema.ControllerInput.MoveMenu.performed += context => MoveMenuSelection();
+        gamepadSchema.ControllerInput.ChaseView.performed += context => ChaseSelect();
+        gamepadSchema.ControllerInput.CockpitView.performed += context => CockpitSelect();
 
         mouseButton = GameObject.Find("Mouse").GetComponent<Button>();
         keyboardButton = GameObject.Find("Keyboard").GetComponent<Button>();
@@ -91,6 +96,7 @@ public class UserInterfaceActions : MonoBehaviour
     void Start()
     {
         controlsSchema.KeyboardInput.Enable();  // Start with the keyboard controls enabled
+        gamepadSchema.ControllerInput.Enable();
 
         infoPanel = GameObject.FindGameObjectWithTag("InfoPanel").GetComponent<RectTransform>();  // Get the Info Panel
         infoPanel.localScale = Vector3.zero;
@@ -131,12 +137,7 @@ public class UserInterfaceActions : MonoBehaviour
         chaseIsFull = false;
         chaseViewLarge = GameObject.FindGameObjectWithTag("BehindViewLarge").GetComponent<RectTransform>();
 
-        // push buttons we want to operate on togher into a list
-        controllerButtons.Add(mouseButton);
-        controllerButtons.Add(keyboardButton);
-        controllerButtons.Add(gamepadButton);
-   
-        ShowControllerButtons(false);  // Loop through list and start buttons as disabled so user cannot scroll to them
+        ToggleUiButtons();  // Loop through list and start extra control buttons as disabled so user cannot scroll to them
     }
 
     private void Update()
@@ -175,7 +176,6 @@ public class UserInterfaceActions : MonoBehaviour
             {
                 imageResize = true;  // allow update method to resize over time
                 cockpitViewLarge.transform.localScale += scaleChange;
-                cockpitView.color = grey;
             }
             else
             {
@@ -188,7 +188,6 @@ public class UserInterfaceActions : MonoBehaviour
             {
                 imageResize = true;  // allow update method to resize over time
                 cockpitViewLarge.transform.localScale -= scaleChange;
-                cockpitView.color = white;
             }
             if(cockpitViewLarge.transform.localScale.x < 0)
             {
@@ -206,7 +205,6 @@ public class UserInterfaceActions : MonoBehaviour
             {
                 imageResize = true;  // allow update method to resize over time
                 chaseViewLarge.transform.localScale += scaleChange;
-                chaseView.color = grey;
             }
             else
             {
@@ -219,7 +217,6 @@ public class UserInterfaceActions : MonoBehaviour
             {
                 imageResize = true;  // allow update method to resize over time
                 chaseViewLarge.transform.localScale -= scaleChange;
-                chaseView.color = white;
             }
             else if (chaseViewLarge.transform.localScale.x < 0)
             {
@@ -241,6 +238,10 @@ public class UserInterfaceActions : MonoBehaviour
         {
             Cursor.SetCursor(quit, customOffset, cursorMode);
         }
+        else if (cockpitIsFull)
+        {
+            Cursor.SetCursor(quit, customOffset, cursorMode);
+        }
         else
         {
             Cursor.SetCursor(default, offSetNone, cursorMode);
@@ -255,6 +256,10 @@ public class UserInterfaceActions : MonoBehaviour
             Cursor.SetCursor(magnify, customOffset, cursorMode);
         }
         else if (cockpitIsFull)
+        {
+            Cursor.SetCursor(quit, customOffset, cursorMode);
+        }
+        else if (chaseIsFull)
         {
             Cursor.SetCursor(quit, customOffset, cursorMode);
         }
@@ -323,6 +328,8 @@ public class UserInterfaceActions : MonoBehaviour
     {
         controlsPanel.localScale = Vector3.zero;  // close the controls panel if its open
         controlsIsVisible = false;
+        ToggleUiButtons();
+
         if (infoIsVisible)
         {
             Cursor.SetCursor(quit, customOffset, cursorMode);
@@ -351,7 +358,7 @@ public class UserInterfaceActions : MonoBehaviour
             controlsPanel.localScale = Vector3.zero;  // hide panel
             Cursor.SetCursor(controls, customOffset, cursorMode);
             controlsIsVisible = false;
-            ShowControllerButtons(false);
+            ToggleUiButtons();
         }
         else
         {
@@ -359,7 +366,7 @@ public class UserInterfaceActions : MonoBehaviour
             controlsPanel.localScale = uiPanelScale; // show panel
             Cursor.SetCursor(quit, customOffset, cursorMode);
             controlsIsVisible = true;
-            ShowControllerButtons(true);
+            ToggleUiButtons();
         }
         ShowHideControlSurfaceDescriptions();
     }
@@ -425,6 +432,7 @@ public class UserInterfaceActions : MonoBehaviour
         chaseIsFull = false;
         ChasePositionChange();
         controlsIsVisible = false;
+        ToggleUiButtons();
 
         infoPanel.localScale = Vector3.zero;
         controlsPanel.localScale = Vector3.zero;  // hide panel
@@ -435,7 +443,7 @@ public class UserInterfaceActions : MonoBehaviour
         // Reset the flaps slider
         flapSlider.value = 0;
 
-        ShowControllerButtons(false); // reset buttons so that correct ones are hidden
+        ToggleUiButtons(); // reset buttons so that correct ones are hidden
     }
 
     public void ShowHideControlSurfaceDescriptions()
@@ -453,21 +461,49 @@ public class UserInterfaceActions : MonoBehaviour
     }
 
     // Go thorugh each button in the list and allow it to be interactable / not interactable
-    private void ShowControllerButtons(bool value)
+    private void ToggleUiButtons()
     {
         // If items are to be shown, change bool to true, else make it false. Other scripts use this bool to trigger events.
-        if (value)
+        uiButtons.Clear();  // Empty the current button list#
+        nonUiButtons.Clear();
+
+        // Always include these buttons
+        var info = GameObject.Find("Info_Button").GetComponent<Button>();
+        var controls = GameObject.Find("Controls_Button").GetComponent<Button>();
+        var reset = GameObject.Find("Reset_Button").GetComponent<Button>();
+        // Always add in the primary buttons
+        uiButtons.Add(info);
+        uiButtons.Add(controls);
+        uiButtons.Add(reset);
+
+        var mouse = GameObject.Find("Mouse").GetComponent<Button>();
+        var keyboard = GameObject.Find("Keyboard").GetComponent<Button>();
+        var gamepad = GameObject.Find("Gamepad").GetComponent<Button>();
+
+        if (controlsIsVisible)
         {
-            fullUiButtonList = true;
+            // Only add in the three buttons if we want the full list of buttons - whilst control button panel is open
+            uiButtons.Add(mouse);
+            uiButtons.Add(keyboard);
+            uiButtons.Add(gamepad);
         }
         else
         {
-            fullUiButtonList = false;
+            nonUiButtons.Add(mouse);
+            nonUiButtons.Add(keyboard);
+            nonUiButtons.Add(gamepad);
         }
 
-        foreach (Button button in controllerButtons)
+        // Make all buttons in uiButton list interactable
+        foreach (Button button in uiButtons)
         {
-            button.interactable = value;
+            button.interactable = true;
+        }
+
+        // Make all buttons in nonUiButton list non-interactable
+        foreach(Button button in nonUiButtons)
+        {
+            button.interactable = false;
         }
     }
 
@@ -497,15 +533,37 @@ public class UserInterfaceActions : MonoBehaviour
                 OnMouseClickGamepad();
                 break;
             case "CockpitImage":
-                CockpitActions();
-                CockpitPositionChange();
+                CockpitSelect();
                 break;
             case "BackImage":
-                ChaseActions();
-                ChasePositionChange();
+                ChaseSelect();
                 break;
             default:
                 break;
         }
+    }
+
+    private void CockpitSelect()
+    {
+        CockpitActions();
+        CockpitPositionChange();
+    }
+
+    private void ChaseSelect()
+    {
+        ChaseActions();
+        ChasePositionChange();
+    }
+
+    private void MoveMenuSelection()
+    {
+        ToggleUiButtons(); // ensure the UI button list is currently correct
+        menuCounter++;  // add one to menuCounter
+        if (menuCounter >= uiButtons.Count)  // if counter is higher than current avalaible list entries, reset counter number to avoid errors
+        {
+            menuCounter = 0;
+        }
+        // Get the next UI element in the list, then make it selected
+        uiButtons[menuCounter].Select();
     }
 }
