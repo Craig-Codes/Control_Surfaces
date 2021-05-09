@@ -48,6 +48,8 @@ public static class ControlsUtilityMethods
     static Vector3 rightFlapStartingRotations = rightFlap.GetStartingRotations();
     static Vector3 leftFlapStartingRotations = leftFlap.GetStartingRotations();
 
+    private static Slider flapSlider = GameObject.FindGameObjectWithTag("FlapSlider").GetComponent<Slider>();
+
     // Get each surfaces starting positions
     public static void LeftPedalDownKeyboard()
     {
@@ -134,6 +136,20 @@ public static class ControlsUtilityMethods
         leftAileron.Rotate(leftAileronRotation);
         var rightAileronRotation = new Vector3(rightAileronStartingRotations.x, degrees, rightAileronStartingRotations.z);
         rightAileron.Rotate(rightAileronRotation);
+    }
+
+    //////////////////////////////////////////////////////////
+    ////////////////////// FLAPS /////////////////////////////
+    //////////////////////////////////////////////////////////
+    public static void MoveFlapsDown()
+    {
+        // Move the Flaps slider value, the flapsSlider script then deals with the rest
+        flapSlider.value -= 1;
+    }
+
+    public static void MoveFlapsUp()
+    {
+        flapSlider.value += 1;
     }
 
 }
