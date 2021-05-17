@@ -144,12 +144,12 @@ public static class ControlsUtilityMethods
     public static void MoveFlapsDown()
     {
         // Move the Flaps slider value, the flapsSlider script then deals with the rest
-        flapSlider.value -= 1;
+        flapSlider.value += 1;
     }
 
     public static void MoveFlapsUp()
     {
-        flapSlider.value += 1;
+        flapSlider.value -= 1;
     }
 
 }
