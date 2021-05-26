@@ -102,7 +102,55 @@ public class AircraftMovement : MonoBehaviour
         // Logorithmic maths to get aircraft to rotate in a logorithmic speed curve, based on throttle slider figure (1 to 3).
         private float RotationSpeedLogCalc()
         {
-            return throttleSlider.value;
+            //3 - 17seconds = 3.12ish
+            //2.5 - 25seconds = 2.1
+            //2 - 40seconds = 1.32
+            //1 - 50seconds = 1.08ish
+
+            //500 = 3
+            //400 = 2.5
+            //300 = 2
+            //200 = 1.5
+            //100 = 1
+
+            float rotationValue;
+            if (throttleSlider.value <= 1.25)
+            {
+                rotationValue = 1.08f;
+            }
+            else if (throttleSlider.value <= 1.5)
+            {
+                rotationValue = 1.18f;
+            }
+            else if (throttleSlider.value <= 1.75)
+            {
+                rotationValue = 1.25f;
+            }
+            else if (throttleSlider.value <= 2)
+            {
+                rotationValue = 1.32f;
+            }
+            else if (throttleSlider.value <= 2.25)
+            {
+                rotationValue = 1.85f;
+            }
+            else if (throttleSlider.value <= 2.5)
+            {
+                rotationValue = 2.1f;
+            }
+            else if (throttleSlider.value <= 2.75)
+            {
+                rotationValue = 2.65f;
+            }
+            else
+            {
+                rotationValue = 3.12f;
+            }
+            return rotationValue;
+
+            //Debug.Log((float)System.Math.Sqrt(throttleSlider.value) * rotationMultiplyFactor);
+            //return (float)System.Math.Sqrt(throttleSlider.value) * rotationMultiplyFactor;
+            //return (float)rotationValue;  // Return value of the equation
         }
 
 
