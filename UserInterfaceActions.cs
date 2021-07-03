@@ -151,20 +151,23 @@ public class UserInterfaceActions : MonoBehaviour
     // Reverse the boolean values on click
     public void CockpitActions()
     {
-        if (!chaseIsFull)  // check to ensure other camera isnt in large mode
-        {
+        //if (!chaseIsFull)  // check to ensure other camera isnt in large mode
+        //{
             cockpitIsFull = !cockpitIsFull;
-        }
+        chaseIsFull = false;
+        //}
         OnMouseEnterCockpitImage();  // ensure mouse pointer is in the correct state after clicking
     }
 
     public void ChaseActions()
     {
-        if (!cockpitIsFull)
-        {
+        //if (!cockpitIsFull)
+        //{
             chaseIsFull = !chaseIsFull;
-        }
+        cockpitIsFull = false;
+        //}
         OnMouseEnterChaseImage();
+
 
     }
 
@@ -230,43 +233,28 @@ public class UserInterfaceActions : MonoBehaviour
 
    public void OnMouseEnterChaseImage()
     {
-        if (!chaseIsFull && !cockpitIsFull)
+        if (!chaseIsFull)
         {
             Cursor.SetCursor(magnify, customOffset, cursorMode);
         }
-        else if (chaseIsFull)
-        {
-            Cursor.SetCursor(quit, customOffset, cursorMode);
-        }
-        else if (cockpitIsFull)
-        {
-            Cursor.SetCursor(quit, customOffset, cursorMode);
-        }
         else
         {
-            Cursor.SetCursor(default, offSetNone, cursorMode);
+            Cursor.SetCursor(quit, customOffset, cursorMode);
         }
         
     }
 
     public void OnMouseEnterCockpitImage()
     {
-        if (!chaseIsFull && !cockpitIsFull)
+        if (!cockpitIsFull)
         {
             Cursor.SetCursor(magnify, customOffset, cursorMode);
         }
-        else if (cockpitIsFull)
-        {
-            Cursor.SetCursor(quit, customOffset, cursorMode);
-        }
-        else if (chaseIsFull)
-        {
-            Cursor.SetCursor(quit, customOffset, cursorMode);
-        }
         else
         {
-            Cursor.SetCursor(default, offSetNone, cursorMode);
+            Cursor.SetCursor(quit, customOffset, cursorMode);
         }
+  
 
     }
 
