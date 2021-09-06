@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿// Script controls all Menu UI interactions across all control types (mouse, keyboard, touch, gamepad)
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,7 +10,7 @@ using TMPro;
 
 
 // Script deals with the Menu system
-public class UserInterfaceActions : MonoBehaviour
+public class MenuSystem : MonoBehaviour
 {
     // Mouse pointer images
     public Texture2D defaultPointer;
@@ -65,8 +67,8 @@ public class UserInterfaceActions : MonoBehaviour
     private static Button keyboardButton;
     private static Button gamepadButton;
 
-    private static PlayerControls controlsSchema;
-    private static PlayerControls gamepadSchema;
+    private static PlayerControls playerControlsKeyboard;
+    private static PlayerControls playerControlsGamepad;
 
     // Currently selected UI Button
     private static GameObject currentSelected;
@@ -80,13 +82,13 @@ public class UserInterfaceActions : MonoBehaviour
     private void Awake()
     {
         // Select UI Button
-        controlsSchema = new PlayerControls();
-        gamepadSchema = new PlayerControls();
-        controlsSchema.KeyboardInput.ButtonSelect.performed += context => OnButtonSelect();
-        gamepadSchema.ControllerInput.SelectMenu.performed += context => OnButtonSelect();
-        gamepadSchema.ControllerInput.MoveMenu.performed += context => MoveMenuSelection();
-        gamepadSchema.ControllerInput.ChaseView.performed += context => ChaseSelect();
-        gamepadSchema.ControllerInput.CockpitView.performed += context => CockpitSelect();
+        playerControlsKeyboard = new PlayerControls();
+        playerControlsGamepad = new PlayerControls();
+        playerControlsKeyboard.KeyboardInput.ButtonSelect.performed += context => OnButtonSelect();
+        playerControlsGamepad.ControllerInput.SelectMenu.performed += context => OnButtonSelect();
+        playerControlsGamepad.ControllerInput.MoveMenu.performed += context => MoveMenuSelection();
+        playerControlsGamepad.ControllerInput.ChaseView.performed += context => ChaseSelect();
+        playerControlsGamepad.ControllerInput.CockpitView.performed += context => CockpitSelect();
 
         mouseButton = GameObject.Find("Mouse").GetComponent<Button>();
         keyboardButton = GameObject.Find("Keyboard").GetComponent<Button>();
@@ -95,8 +97,8 @@ public class UserInterfaceActions : MonoBehaviour
 
     void Start()
     {
-        controlsSchema.KeyboardInput.Enable();  // Start with the keyboard controls enabled
-        gamepadSchema.ControllerInput.Enable();
+        playerControlsKeyboard.KeyboardInput.Enable();  // Start with the keyboard controls enabled
+        playerControlsGamepad.ControllerInput.Enable();
 
         infoPanel = GameObject.FindGameObjectWithTag("InfoPanel").GetComponent<RectTransform>();  // Get the Info Panel
         infoPanel.localScale = Vector3.zero;

@@ -1,11 +1,13 @@
-﻿using System.Collections;
+﻿
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine;
 
 // Script is used for all shared Methods and variables across the control scripts
 // This script interacts with the actual control surface objects, based on commands from the control type scripts
-public static class ControlsUtilityMethods
+public class ControlsUtilityMethods
 {
     private static Button leftPedal = GameObject.Find("L_Pedal").GetComponent<Button>();
     private static Button rightPedal = GameObject.Find("R_Pedal").GetComponent<Button>();
@@ -31,7 +33,7 @@ public static class ControlsUtilityMethods
     20 / 64 = 0.3125
     We need to rotate by +/-0.3125 for each joystick movement
 */
-
+   
     static ControlSurfaces.Rudder rudder = ControlSurfaces.rudder;
     static ControlSurfaces.Surface leftAileron = ControlSurfaces.leftAileron;
     static ControlSurfaces.Surface rightAileron = ControlSurfaces.rightAileron;
@@ -45,11 +47,11 @@ public static class ControlsUtilityMethods
     static Vector3 leftElevatorStartingRotations = leftElevator.GetStartingRotations();
     static Vector3 rightAileronStartingRotations = rightAileron.GetStartingRotations();
     static Vector3 leftAileronStartingRotations = leftAileron.GetStartingRotations();
-
     static Vector3 rightFlapStartingRotations = rightFlap.GetStartingRotations();
     static Vector3 leftFlapStartingRotations = leftFlap.GetStartingRotations();
 
-    private static Slider flapSlider = GameObject.FindGameObjectWithTag("FlapSlider").GetComponent<Slider>();
+    private static Slider flapsSlider = GameObject.FindGameObjectWithTag("FlapSlider").GetComponent<Slider>();
+    private static Slider throttleSlider = GameObject.FindGameObjectWithTag("ThrottleSlider").GetComponent<Slider>();
 
     // Get each surfaces starting positions
 
@@ -148,15 +150,37 @@ public static class ControlsUtilityMethods
     //////////////////////////////////////////////////////////
     ////////////////////// FLAPS /////////////////////////////
     //////////////////////////////////////////////////////////
-    public static void MoveFlapsDown()
+    public static void MoveFlapsDown()  // Control Input method
     {
-        // Move the Flaps slider value, the flapsSlider script then deals with the rest
-        flapSlider.value += 1;
+        flapsSlider.value += 1;
     }
 
-    public static void MoveFlapsUp()
+    public static void MoveFlapsUp()  
     {
-        flapSlider.value -= 1;
+        flapsSlider.value -= 1;
+    }
+
+    // Moves flaps based on the flaps slider value
+    public static void MoveFlaps()
+    {
+        // Flaps are only moved at low speed, so firstly ensure airspeed is low
+        if (throttleSlider.value <= 1)
+        {
+            float degrees = flapsSlider.value * 5;  // either zero, one or two, so 0, 10 or 20 degrees
+            var leftFlapRotation = new Vector3(leftFlapStartingRotations.x, -degrees, leftFlapStartingRotations.z);
+            leftFlap.Rotate(leftFlapRotation);
+            var rightFlapRotation = new Vector3(rightFlapStartingRotations.x, -degrees, rightFlapStartingRotations.z);
+            rightFlap.Rotate(rightFlapRotation);
+        }
+        else
+        {
+            flapsSlider.value = 0;  // Reset the flaps slider back to top
+            var leftFlapRotation = new Vector3(leftFlapStartingRotations.x, 0, leftFlapStartingRotations.z);
+            leftFlap.Rotate(leftFlapRotation);
+            var rightFlapRotation = new Vector3(rightFlapStartingRotations.x, 0, rightFlapStartingRotations.z);
+            rightFlap.Rotate(rightFlapRotation);
+        }
+
     }
 
 }

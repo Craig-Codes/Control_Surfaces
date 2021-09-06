@@ -103,8 +103,10 @@ public class ControlSurfaces : MonoBehaviour
 
     // Update is called once per frame
     // Each frame we want to move elevators and ailerons based on joysticks location
+    // Update method controls how the surfaces are moved based on there current rotation values
     void Update()
     {
-        ControlsUtilityMethods.RotateSurfaces();
+        ControlsUtilityMethods.RotateSurfaces();  // Rotate surfaces based on UI Joystick location
+        ControlsUtilityMethods.MoveFlaps();  // Rotate flaps based on UI Flap Slider position
     }
 }

@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿// Script controls gamepad interactions for the UI throttle, flaps, peddals and Joystick
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;

@@ -8,7 +8,6 @@ using UnityEngine.InputSystem;
 
 public class Throttle : MonoBehaviour
 {
-
     public Slider throttleSlider;  // slider added to script via Unity Engine Inspector
     private RectTransform airspeedNeedle;
 

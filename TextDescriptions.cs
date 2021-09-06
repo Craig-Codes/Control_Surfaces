@@ -68,8 +68,8 @@ public class TextDescriptions : MonoBehaviour
         // Get the UI image background
         controlInputDescriptionBackground = GameObject.Find("ControlsDescriptionBackground").GetComponent<Image>();
 
-        infoIsVisible = UserInterfaceActions.infoIsVisible;
-        controlsIsVisible = UserInterfaceActions.controlsIsVisible;
+        infoIsVisible = MenuSystem.infoIsVisible;
+        controlsIsVisible = MenuSystem.controlsIsVisible;
     }
 
     // Update is called once per frame
@@ -101,8 +101,8 @@ public class TextDescriptions : MonoBehaviour
     private void TextOutput()
     {
         // If nothing else is visible on screen
-        infoIsVisible = UserInterfaceActions.infoIsVisible;
-        controlsIsVisible = UserInterfaceActions.controlsIsVisible;
+        infoIsVisible = MenuSystem.infoIsVisible;
+        controlsIsVisible = MenuSystem.controlsIsVisible;
         if (controlsIsVisible || infoIsVisible)
         {
             // Hide text and background if no deflection
