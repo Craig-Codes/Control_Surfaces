@@ -100,4 +100,11 @@ public class ControlSurfaces : MonoBehaviour
         rightFlap = new Surface(rightFlapObject);
 
     }
+
+    // Update is called once per frame
+    // Each frame we want to move elevators and ailerons based on joysticks location
+    void Update()
+    {
+        ControlsUtilityMethods.RotateSurfaces();
+    }
 }

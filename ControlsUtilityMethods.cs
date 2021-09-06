@@ -22,7 +22,8 @@ public static class ControlsUtilityMethods
 
     private const float buttonPressDegrees = 20f;
 
-    static float degreesPerJoystickMove = 0.3125f;
+    static float degreesPerJoystickMove = 0.3125f;  // Joystick movment for 20 degrees
+    //static float degreesPerJoystickMoveLess = 0.15625f;   // Joystick movement for 15 degrees 
     /* Joystick moves from +64 / -64 on both x and y axis
     For y axis - fully up at 64, fully down at -64 
     On each move, need to know the distance from the center, with the control surface being moved (20 degrees) enough to
@@ -51,27 +52,10 @@ public static class ControlsUtilityMethods
     private static Slider flapSlider = GameObject.FindGameObjectWithTag("FlapSlider").GetComponent<Slider>();
 
     // Get each surfaces starting positions
-    public static void LeftPedalDownKeyboard()
-    {
-        PedalDown(leftPedal, buttonPressDegrees);
-        PedalUp(rightPedal);
-    }
 
-    public static void LeftPedalUpKeyboard()
-    {
-        PedalBothUp();
-    }
-
-    public static void RightPedalDownKeyboard()
-    {
-        PedalDown(rightPedal, buttonPressDegrees);
-        PedalUp(leftPedal);
-    }
-
-    public static void RightPedalUpKeyboard()
-    {
-        PedalBothUp();
-    }
+    //////////////////////////////////////////////////////////////////////
+    /////////////////// CLICK CONTROLS //////////////////////////////////
+    ////////////////////////////////////////////////////////////////////
 
     public static void PedalDown(Button pedal, float degrees) // Rotate Rudder based on pedal pressed by input type
     {
@@ -99,6 +83,29 @@ public static class ControlsUtilityMethods
         rightPedal.transform.localScale = pedalFullsize;
         Vector3 rudderRotation = new Vector3(rudderStartingRotations.x, rudderStartingRotations.y, 0);
         rudder.Rotate(rudderRotation);
+    }
+
+    // On single click press, one pedal comes down, and the other returns up
+    public static void LeftPedalDownKeyboard()
+    {
+        PedalDown(leftPedal, buttonPressDegrees);
+        PedalUp(rightPedal);
+    }
+
+    public static void LeftPedalUpKeyboard()
+    {
+        PedalBothUp();
+    }
+
+    public static void RightPedalDownKeyboard()
+    {
+        PedalDown(rightPedal, buttonPressDegrees);
+        PedalUp(leftPedal);
+    }
+
+    public static void RightPedalUpKeyboard()
+    {
+        PedalBothUp();
     }
 
     //////////////////////////////////////////////////////////////////////
