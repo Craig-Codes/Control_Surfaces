@@ -51,7 +51,21 @@ public class ControlsUtilityMethods
     static Vector3 leftFlapStartingRotations = leftFlap.GetStartingRotations();
 
     private static Slider flapsSlider = GameObject.FindGameObjectWithTag("FlapSlider").GetComponent<Slider>();
+
+    // Throttle
     private static Slider throttleSlider = GameObject.FindGameObjectWithTag("ThrottleSlider").GetComponent<Slider>();
+    private static RectTransform airspeedNeedle = GameObject.FindGameObjectWithTag("SpeedNeedle").GetComponent<RectTransform>();
+
+    // const variables are set at compile time
+    private const float sliderMinValue = 1;
+    private const float sliderMaxValue = 3;
+
+    // Add references to the different cloud particle systems
+    private static ParticleSystem clouds1 = GameObject.Find("Clouds").GetComponent<ParticleSystem>();
+    private static ParticleSystem clouds2 = GameObject.Find("Clouds2").GetComponent<ParticleSystem>();
+    private static ParticleSystem clouds3 = GameObject.Find("Clouds3").GetComponent<ParticleSystem>();
+    // Add the particle systems into a list
+    private static List<ParticleSystem> particleList = new List<ParticleSystem> { clouds1, clouds2, clouds3 };
 
     // Get each surfaces starting positions
 
@@ -183,5 +197,43 @@ public class ControlsUtilityMethods
 
     }
 
+    //////////////////////////////////////////////////////////
+    ////////////////////// THROTTLE //////////////////////////
+    //////////////////////////////////////////////////////////
+
+    public static void UpdateCloudSpeed()
+    {
+        // Setup the throttle values - cannot be done in start or awake methods as static classes can't have these
+        throttleSlider.minValue = sliderMinValue;  // Slider max value (top) is 3
+        throttleSlider.maxValue = sliderMaxValue;  // Slider min value (bottom) is 1
+
+        // Change particle system speeds based on current thottle value
+        foreach (ParticleSystem cloud in particleList)
+        {
+            ParticleSystem.VelocityOverLifetimeModule velocity = cloud.velocityOverLifetime;
+            velocity.speedModifier = throttleSlider.value;  // between 1 and 3
+
+            ParticleSystem.EmissionModule emission = cloud.emission;
+            emission.rateOverTime = (throttleSlider.value / 10) * 5;
+        }
+
+        // Update the AirSpeed Needle based on throttle position
+        MoveAirspeedNeedle(throttleSlider.value);
+    }
+
+    public static void MoveAirspeedNeedle(float sliderValue)
+    {
+        float newSpeedNeedleValue = sliderValue * 142;
+        airspeedNeedle.anchoredPosition = new Vector2(airspeedNeedle.anchoredPosition.x, newSpeedNeedleValue);  // 142 * throttle number of 1-3 corresponds to needle x axis position
+    }
+
+
+    public static void MoveUiThrottle(Vector2 context)
+    {
+        Vector2 leftStickCoords = context;
+        throttleSlider.value = leftStickCoords.y + 2;
+    }
+
 }
+
 

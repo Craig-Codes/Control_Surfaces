@@ -108,5 +108,6 @@ public class ControlSurfaces : MonoBehaviour
     {
         ControlsUtilityMethods.RotateSurfaces();  // Rotate surfaces based on UI Joystick location
         ControlsUtilityMethods.MoveFlaps();  // Rotate flaps based on UI Flap Slider position
+        ControlsUtilityMethods.UpdateCloudSpeed(); // Update the cloud speed based on throttle position 
     }
 }

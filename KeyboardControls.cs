@@ -13,6 +13,10 @@ public class KeyboardControls : MonoBehaviour
 
     private PlayerControls controls;
 
+    // Reference to Throttle
+    private Slider throttleSlider;
+    private float sliderIncrementValue = 1;
+
     void Awake()
     {
         controls = new PlayerControls();
@@ -34,13 +38,17 @@ public class KeyboardControls : MonoBehaviour
         // Flaps Keys
         controls.KeyboardInput.FlapsDown.performed += context => ControlsUtilityMethods.MoveFlapsDown();
         controls.KeyboardInput.FlapsUp.performed += context => ControlsUtilityMethods.MoveFlapsUp();
+        // Throttle Keys
+        controls.KeyboardInput.ThrottleDown.performed += context => MoveThrottle("down");
+        controls.KeyboardInput.ThrottleUp.performed += context => MoveThrottle("up");
     }
     // Start is called before the first frame update
     void Start()
     {
         // Joystick setup
         joystickHandle = GameObject.FindGameObjectWithTag("JoystickHandle").GetComponent<RectTransform>();
-
+        // Throttle setup
+        throttleSlider = GameObject.FindGameObjectWithTag("ThrottleSlider").GetComponent<Slider>();
         controls.KeyboardInput.Enable();  // Start with the keyboard controls enabled
     }
 
@@ -117,4 +125,19 @@ public class KeyboardControls : MonoBehaviour
         }
         ControlsUtilityMethods.RotateSurfaces();  // rotate surfaces based on joystick location
     }
+
+    // Throttle
+    public void MoveThrottle(string direction)
+    {
+        if (direction == "up")  // Faster
+        {
+            throttleSlider.value += sliderIncrementValue;
+        }
+
+        if (direction == "down")  // Slower
+        {
+            throttleSlider.value -= sliderIncrementValue;
+        }
+    }
+    
 }

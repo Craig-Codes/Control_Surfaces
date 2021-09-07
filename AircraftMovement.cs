@@ -8,7 +8,6 @@ using UnityEngine.UI;  // Gives access to the Slider datatype
 
 public class AircraftMovement : MonoBehaviour
 {
-    public Slider uiThrottleSlider;  // slider added to script via Unity Engine Inspector
     private GameObject aircraftObject;  // Reference to the aircraft 3D Model object
     public static Aircraft aircraft;  // Reference to the aircraft Object created in the Start Method 
     // static modifier used so that a new instance of Aircraft doesn't need to be created to call aircraft methods in other scripts
@@ -18,8 +17,8 @@ public class AircraftMovement : MonoBehaviour
     {
         // Get the reference to the aircraft 3D model
         aircraftObject = GameObject.Find("AircraftPivot");
-        // Create the Aircraft Object - Pass in the 3D model and Throttle Slider references
-        aircraft = new Aircraft(aircraftObject, uiThrottleSlider);  
+        // Create the Aircraft Object - Pass in the 3D model as a reference
+        aircraft = new Aircraft(aircraftObject);  
     }
 
     // Update is called once per frame
@@ -49,10 +48,10 @@ public class AircraftMovement : MonoBehaviour
         float startPosZ;
         float startPosW;
 
-        public Aircraft(GameObject aircraft, Slider throttleSlider)  // Aircraft class constructor
+        public Aircraft(GameObject aircraft)  // Aircraft class constructor
         {
             this.aircraft = aircraft;  // Reference to the aircraft 3D model
-            this.throttleSlider = throttleSlider;  // Reference to the UI Throttle Slider
+            this.throttleSlider = GameObject.FindGameObjectWithTag("ThrottleSlider").GetComponent<Slider>();  // Reference to the UI Throttle Slider
             this.rotationSpeed = throttleSlider.value;  // Reference to the current value of the UI Throttle Slider
 
             // Assign the control surfaces

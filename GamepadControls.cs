@@ -26,6 +26,7 @@ public class GamepadControls : MonoBehaviour
         controls.ControllerInput.RudderRightUp.performed += context => ControlsUtilityMethods.RightPedalUpKeyboard();
         controls.ControllerInput.FlapsDown.performed += context => ControlsUtilityMethods.MoveFlapsDown();
         controls.ControllerInput.FlapsUp.performed += context => ControlsUtilityMethods.MoveFlapsUp();
+        controls.ControllerInput.LeftThumbstick.performed += context => ControlsUtilityMethods.MoveUiThrottle(context.ReadValue<Vector2>());// context cant be used to get input information
     }
     // Start is called before the first frame update
     void Start()
