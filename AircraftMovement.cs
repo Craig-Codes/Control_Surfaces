@@ -37,16 +37,16 @@ public class AircraftMovement : MonoBehaviour
         private Slider throttleSlider;  // Reference to the UI Throttle Slider object passes into the class
 
         // Reference to each control surface required by the class to calculate rotation
-        GameObject rudder;
-        GameObject rightAileron;
-        GameObject rightElevator;
-        GameObject cloudPivot;
+        private GameObject rudder;
+        private GameObject rightAileron;
+        private GameObject rightElevator;
+        private GameObject cloudPivot;
 
         // Variables store the aircrafts starting rotation positions for each axis
-        float startPosX;
-        float startPosY;
-        float startPosZ;
-        float startPosW;
+        private float startPosX;
+        private float startPosY;
+        private float startPosZ;
+        private float startPosW;
 
         public Aircraft(GameObject aircraft)  // Aircraft class constructor
         {
@@ -78,9 +78,9 @@ public class AircraftMovement : MonoBehaviour
         {
             rotationSpeed = RotationSpeedCalc();  // Method calculates the speed the aircraft should be rotated at
             // Get all of the control surfaces relevant angles
-            float rudderInspectorFloat = WrapAngle(this.rudder.transform.localEulerAngles.z);
-            float aileronInspectorFloat = WrapAngle(this.rightAileron.transform.localEulerAngles.y);
-            float elevatorInspectorFloat = WrapAngle(this.rightElevator.transform.localEulerAngles.y);
+            float rudderInspectorFloat = ControlsUtilityMethods.WrapAngle(this.rudder.transform.localEulerAngles.z);
+            float aileronInspectorFloat = ControlsUtilityMethods.WrapAngle(this.rightAileron.transform.localEulerAngles.y);
+            float elevatorInspectorFloat = ControlsUtilityMethods.WrapAngle(this.rightElevator.transform.localEulerAngles.y);
             // Map variables to the corresponding control surfaces
             float roll = aileronInspectorFloat;  // ailerons (x axis)
             float pitch = elevatorInspectorFloat;  // elevators (y axis)
@@ -89,17 +89,6 @@ public class AircraftMovement : MonoBehaviour
             AxisRotate(pitch, Vector3.up, Vector3.down);
             AxisRotate(roll, Vector3.right, Vector3.left);
             AxisRotate(yaw, Vector3.back, Vector3.forward);
-        }
-
-        // Method ensures a control surfaces LocalEulerAngle is always between -180 / +180
-        // In our case, this ensures the angle figure is between +/- 20 degrees as no surface moves more than that
-        // When working with quaternions in the Unity Editor, values can exceed 180 degrees which causes issues and inconsistencies
-        private float WrapAngle(float angle)
-        {
-            angle %= 360;  // get remainder from division by 360
-            if (angle > 180)  // If remainder is greater than 180, minus 360 to bring the value into the 180 range
-                return angle - 360;
-            return angle;
         }
 
         // Axis Rotate method rotates the aircraft on each axis (x,y,z) locally based on the current angle of the input surface
@@ -118,7 +107,7 @@ public class AircraftMovement : MonoBehaviour
         // Rotate clouds based on aircrafts Z rotation movement, so they are always moving towards aircraft
         public void RotateClouds()
         {
-            float rudderInspectorFloat = WrapAngle(this.rudder.transform.localEulerAngles.z); // current aircraft Z rotation
+            float rudderInspectorFloat = ControlsUtilityMethods.WrapAngle(this.rudder.transform.localEulerAngles.z); // current aircraft Z rotation
             if (rudderInspectorFloat >= 1)  // Rotate the clouds in conjunction with the rudder, so they follow the aircrafts rotation
             {
                 this.cloudPivot.transform.localRotation *= Quaternion.AngleAxis((rudderInspectorFloat) * rotationSpeed * Time.deltaTime, Vector3.back);

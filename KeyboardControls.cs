@@ -21,10 +21,10 @@ public class KeyboardControls : MonoBehaviour
     {
         controls = new PlayerControls();
         // Rudder Keys
-        controls.KeyboardInput.RudderLeftDown.performed += context => ControlsUtilityMethods.LeftPedalDownKeyboard();// context cant be used to get input information
-        controls.KeyboardInput.RudderLeftUp.performed += context => ControlsUtilityMethods.LeftPedalUpKeyboard();  
-        controls.KeyboardInput.RudderRightDown.performed += context => ControlsUtilityMethods.RightPedalDownKeyboard(); 
-        controls.KeyboardInput.RudderRightUp.performed += context => ControlsUtilityMethods.RightPedalUpKeyboard();  
+        controls.KeyboardInput.RudderLeftDown.performed += context => ControlsUtilityMethods.PedalDownKeyboard("left");// context cant be used to get input information
+        controls.KeyboardInput.RudderLeftUp.performed += context => ControlsUtilityMethods.PedalBothUp();  
+        controls.KeyboardInput.RudderRightDown.performed += context => ControlsUtilityMethods.PedalDownKeyboard("right"); 
+        controls.KeyboardInput.RudderRightUp.performed += context => ControlsUtilityMethods.PedalBothUp();  
         // Elevator Keys                                                                                      
         controls.KeyboardInput.ElevatorsUp.performed += context => ButtonJoystickMoveElevators("down");  
         controls.KeyboardInput.ElevatorsDown.performed += context => ButtonJoystickMoveElevators("up");  

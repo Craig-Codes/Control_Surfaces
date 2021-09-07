@@ -51,9 +51,9 @@ public class TextDescriptions : MonoBehaviour
         leftElevator = ControlSurfaces.leftElevator;
 
         // starting message
-        rudderZAngle = WrapAngle(rudder.GetCurrentRotations().z);
-        aileronYAngle = WrapAngle(leftAileron.GetCurrentRotations().y);
-        elevatorYAngle = WrapAngle(leftElevator.GetCurrentRotations().y);
+        rudderZAngle = ControlsUtilityMethods.WrapAngle(rudder.GetCurrentRotations().z);
+        aileronYAngle = ControlsUtilityMethods.WrapAngle(leftAileron.GetCurrentRotations().y);
+        elevatorYAngle = ControlsUtilityMethods.WrapAngle(leftElevator.GetCurrentRotations().y);
 
         // Get the TextMeshPro via code
         var textArray = FindObjectsOfType<TextMeshProUGUI>();
@@ -77,19 +77,19 @@ public class TextDescriptions : MonoBehaviour
     {
         // Rudder 
         rudderPreviousValue = rudderZAngle;  // Put current position value into variable
-        rudderZAngle = WrapAngle(rudder.GetCurrentRotations().z);  // update the position value
+        rudderZAngle = ControlsUtilityMethods.WrapAngle(rudder.GetCurrentRotations().z);  // update the position value
         rudderCurrentValue = rudderZAngle;  // Put new position value into varaible
         GetRudderPositionChange(rudderPreviousValue, rudderCurrentValue);  // compare the values, building an output string based on results
 
         // Ailerons
         aileronPreviousValue = aileronYAngle;
-        aileronYAngle = WrapAngle(leftAileron.GetCurrentRotations().y);
+        aileronYAngle = ControlsUtilityMethods.WrapAngle(leftAileron.GetCurrentRotations().y);
         aileronCurrentValue = aileronYAngle;
         GetAileronPositionChange(aileronPreviousValue, aileronCurrentValue);
 
         // Elevators
         elevatorPreviousValue = elevatorYAngle;
-        elevatorYAngle = WrapAngle(leftElevator.GetCurrentRotations().y);
+        elevatorYAngle = ControlsUtilityMethods.WrapAngle(leftElevator.GetCurrentRotations().y);
         elevatorCurrentValue = elevatorYAngle;
         GetElevatorPositionChange(elevatorPreviousValue, elevatorCurrentValue);
 
@@ -190,12 +190,4 @@ public class TextDescriptions : MonoBehaviour
         }
     }
 
-    private float WrapAngle(float angle)
-    {
-        angle %= 360;
-        if (angle > 180)
-            return angle - 360;
-
-        return angle;
-    }
 }

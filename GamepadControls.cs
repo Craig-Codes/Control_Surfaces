@@ -20,10 +20,10 @@ public class GamepadControls : MonoBehaviour
     {
         controls = new PlayerControls();
         controls.ControllerInput.RightThumbstick.performed += context => MoveUiJoystick(context.ReadValue<Vector2>());// context cant be used to get input information
-        controls.ControllerInput.RudderLeftDown.performed += context => ControlsUtilityMethods.LeftPedalDownKeyboard();// context cant be used to get input information
-        controls.ControllerInput.RudderLeftUp.performed += context => ControlsUtilityMethods.LeftPedalUpKeyboard();
-        controls.ControllerInput.RudderRightDown.performed += context => ControlsUtilityMethods.RightPedalDownKeyboard();
-        controls.ControllerInput.RudderRightUp.performed += context => ControlsUtilityMethods.RightPedalUpKeyboard();
+        controls.ControllerInput.RudderLeftDown.performed += context => ControlsUtilityMethods.PedalDownKeyboard("left");// context cant be used to get input information
+        controls.ControllerInput.RudderLeftUp.performed += context => ControlsUtilityMethods.PedalBothUp();
+        controls.ControllerInput.RudderRightDown.performed += context => ControlsUtilityMethods.PedalDownKeyboard("right");
+        controls.ControllerInput.RudderRightUp.performed += context => ControlsUtilityMethods.PedalBothUp();
         controls.ControllerInput.FlapsDown.performed += context => ControlsUtilityMethods.MoveFlapsDown();
         controls.ControllerInput.FlapsUp.performed += context => ControlsUtilityMethods.MoveFlapsUp();
         controls.ControllerInput.LeftThumbstick.performed += context => ControlsUtilityMethods.MoveUiThrottle(context.ReadValue<Vector2>());// context cant be used to get input information
