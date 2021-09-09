@@ -14,16 +14,18 @@ public static class ControlsUtilityMethods
     private static Button leftPedal = GameObject.Find("L_Pedal").GetComponent<Button>();
     private static Button rightPedal = GameObject.Find("R_Pedal").GetComponent<Button>();
     // Pedal sizes changed from just one location
-    private static Vector3 pedalFullsize = new Vector3(0.75f, 0.75f, 0.75f);
-    private static Vector3 pedalSmallsize = new Vector3(0.6f, 0.6f, 0.6f);
+    // Readonly used so that varaibles cannot be redeclared after construction
+    // Only C# built in types can be declared as constants, so Vector3 doesnt allow this so readonly used
+    private static readonly Vector3 pedalFullsize = new Vector3(0.75f, 0.75f, 0.75f);
+    private static readonly Vector3 pedalSmallsize = new Vector3(0.6f, 0.6f, 0.6f);
 
     // Reference to the UI Joystick object
     private static RectTransform joystickHandle = GameObject.FindGameObjectWithTag("JoystickHandle")
         .GetComponent<RectTransform>(); // Get the joystick Handle object
     private static float joystickX, joystickY;// Joystick starting positions
     private static Vector2 currentJoystickCoords;  // Reference to current Joystick position both x and y axis
-    private const float buttonPressDegrees = 20f;  // Move 20 degrees when a keyboard button is used to move the joystick
-    private const float degreesPerJoystickMove = 0.3125f;  // Joystick movement for 20 degrees
+    private const float BUTTON_PRESS_DEGREES = 20f;  // Move 20 degrees when a keyboard button is used to move the joystick
+    private const float DEGREES_PER_JOTSTICK_MOVE = 0.3125f;  // Joystick movement for 20 degrees
     //static float degreesPerJoystickMoveLess = 0.15625f;   // Joystick movement for 15 degrees 
     
     /* Joystick Calculations:
@@ -63,14 +65,14 @@ public static class ControlsUtilityMethods
     private static RectTransform airspeedNeedle = GameObject.FindGameObjectWithTag("SpeedNeedle").GetComponent<RectTransform>();
 
     // const variables are set at compile time and cannot be changed. Values used to limit the throttleSliders values
-    private const float sliderMinValue = 1;
-    private const float sliderMaxValue = 3;
+    private const float SLIDER_MIN_VALUE = 1;
+    private const float SLIDER_MAX_VALUE = 3;
 
     // Add references to the different cloud particle systems
     private static ParticleSystem clouds1 = GameObject.Find("Clouds").GetComponent<ParticleSystem>();
     private static ParticleSystem clouds2 = GameObject.Find("Clouds2").GetComponent<ParticleSystem>();
     private static ParticleSystem clouds3 = GameObject.Find("Clouds3").GetComponent<ParticleSystem>();
-    // Add the particle systems into a list allowing for them to be easily looped over
+    // Add the particle systems into a list allowing for them to be easily looped over to edit them
     private static List<ParticleSystem> particleList = new List<ParticleSystem> { clouds1, clouds2, clouds3 };
 
 
@@ -125,12 +127,12 @@ public static class ControlsUtilityMethods
     {
         if(pedal == "left")
         {
-           PedalDown(leftPedal, buttonPressDegrees);
+           PedalDown(leftPedal, BUTTON_PRESS_DEGREES);
            PedalUp(rightPedal);
         }
         else if(pedal == "right")
         {
-           PedalDown(rightPedal, buttonPressDegrees);
+           PedalDown(rightPedal, BUTTON_PRESS_DEGREES);
            PedalUp(leftPedal);
         }
 
@@ -158,7 +160,7 @@ public static class ControlsUtilityMethods
     private static void RotateElevators()
     {
         // rotate around parent objects pivot point on the y axis to the required degrees (20 is the maximum)
-        float degrees = currentJoystickCoords.y * degreesPerJoystickMove;
+        float degrees = currentJoystickCoords.y * DEGREES_PER_JOTSTICK_MOVE;
         // Left and right elevators always move opposite to one another
         var leftElevatorRotation = new Vector3(leftElevatorStartingRotations.x, degrees, leftElevatorStartingRotations.z);
         leftElevator.Rotate(leftElevatorRotation);
@@ -169,7 +171,7 @@ public static class ControlsUtilityMethods
     private static void RotateAilerons()
     {
         // rotate around parent objects pivot point on the x axis to the required degrees (20 is the maximum)
-        float degrees = currentJoystickCoords.x * degreesPerJoystickMove;
+        float degrees = currentJoystickCoords.x * DEGREES_PER_JOTSTICK_MOVE;
         // Left and right ailerons always move together in the same direction
         var leftAileronRotation = new Vector3(leftAileronStartingRotations.x, -degrees, leftAileronStartingRotations.z);
         leftAileron.Rotate(leftAileronRotation);
@@ -217,8 +219,8 @@ public static class ControlsUtilityMethods
     public static void UpdateCloudSpeed()
     {
         // Setup the throttle values - cannot be done in start or awake methods as static classes can't have these
-        throttleSlider.minValue = sliderMinValue;  // Slider max value (top) is 3
-        throttleSlider.maxValue = sliderMaxValue;  // Slider min value (bottom) is 1
+        throttleSlider.minValue = SLIDER_MIN_VALUE;  // Slider max value (top) is 3
+        throttleSlider.maxValue = SLIDER_MAX_VALUE;  // Slider min value (bottom) is 1
 
         // Change particle system speeds based on current throttle value
         foreach (ParticleSystem cloud in particleList)  // Loop through each particle system
