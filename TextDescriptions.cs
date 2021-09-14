@@ -1,4 +1,7 @@
-﻿using System.Collections;
+﻿// Script provides the caption box at the bottom of the UI allowing trainees to read
+// which control surfaces are being defelected based on which controls are being used
+
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -6,196 +9,181 @@ using UnityEngine.UI;
 
 public class TextDescriptions : MonoBehaviour
 {
-
-    private TextMeshProUGUI controlInputDescription;
+    // Reference to the Text box and its background, used to display the current aircraft state
+    private TextMeshProUGUI controlSurfaceDescriptions;
     private Image controlInputDescriptionBackground;
 
-    // variables from UI script
-    private bool infoIsVisible;
+    // Variables from MenuSystem.cs script - provide access to static properties
+    // Booleans used to determine if any other UI is displayed over the top of the text descriptions
+    // allowing the text discription to be hidden
+    private bool infoIsVisible;  
     private bool controlsIsVisible;
 
-    // Reference to control surface objects
+    // Reference to control surface objects 
+    // Variables used to read the state / deflection of each control surface
     ControlSurfaces.Rudder rudder;
     ControlSurfaces.Surface leftAileron;
     ControlSurfaces.Surface leftElevator;
 
-    // control surface capture vars
+    // Control surface capture vars, store references to the current positions of each surface
     // Rudder
-    //private GameObject rudder;
-    float rudderZAngle;
-    float rudderPreviousValue;
-    float rudderCurrentValue;
-    string rudderString;  // variable stores the current direction of the rudder
-
-
+    private float rudderZAngle;
+    private string rudderString;  // variable stores the current text description of the rudder surface position
     // Ailerons
-    //private GameObject leftAileron;
-    float aileronYAngle;
-    float aileronPreviousValue;
-    float aileronCurrentValue;
-    string aileronString;  // variable stores the current direction of the rudder
-
+    private float aileronYAngle;
+    private string aileronString;  
     // Elevators
-    //private GameObject leftElevator;
-    float elevatorYAngle;
-    float elevatorPreviousValue;
-    float elevatorCurrentValue;
-    string elevatorString;  // variable stores the current direction of the rudder
+    private float elevatorYAngle;
+    private string elevatorString;  
 
     // Start is called before the first frame update
     void Start()
     {
-        // Get the control surfaces
+        // Get references to the control surface objects
         rudder = ControlSurfaces.rudder;
         leftAileron = ControlSurfaces.leftAileron;
         leftElevator = ControlSurfaces.leftElevator;
 
-        // starting message
-        rudderZAngle = WrapAngle(rudder.GetCurrentRotations().z);
-        aileronYAngle = WrapAngle(leftAileron.GetCurrentRotations().y);
-        elevatorYAngle = WrapAngle(leftElevator.GetCurrentRotations().y);
+        // Get the relevant start angles for each surface
+        rudderZAngle = ControlsUtilityMethods.WrapAngle(rudder.GetCurrentRotations().z);
+        aileronYAngle = ControlsUtilityMethods.WrapAngle(leftAileron.GetCurrentRotations().y);
+        elevatorYAngle = ControlsUtilityMethods.WrapAngle(leftElevator.GetCurrentRotations().y);
 
-        // Get the TextMeshPro via code
+        // Get the TextMeshPro via code. This text area is where description text is shown to the user
         var textArray = FindObjectsOfType<TextMeshProUGUI>();
-        foreach (var element in textArray)
+        foreach (var element in textArray)  // loop through all text mesh pro objects
         {
             if (element.tag == "ControlsDescription")
-            {
-                controlInputDescription = element;
+            {   // If the object is tagged as "ControlsDescription" the reference is then stored in the variable
+                // allowing us to print directly into the text box through code
+                controlSurfaceDescriptions = element;
             }
         }
 
-        // Get the UI image background
+        // Get the UI text box background, enabling us to show ans hide it when required
         controlInputDescriptionBackground = GameObject.Find("ControlsDescriptionBackground").GetComponent<Image>();
 
-        infoIsVisible = UserInterfaceActions.infoIsVisible;
-        controlsIsVisible = UserInterfaceActions.controlsIsVisible;
+        // Store initial values of MenuSystem script booleans
+        infoIsVisible = MenuSystem.infoIsVisible;
+        controlsIsVisible = MenuSystem.controlsIsVisible;
     }
 
     // Update is called once per frame
+    // Each frame the update method is used to determin the current position of each
+    // control surface, updating the text box with the correct user information
     void Update()
     {
         // Rudder 
-        rudderPreviousValue = rudderZAngle;  // Put current position value into variable
-        rudderZAngle = WrapAngle(rudder.GetCurrentRotations().z);  // update the position value
-        rudderCurrentValue = rudderZAngle;  // Put new position value into varaible
-        GetRudderPositionChange(rudderPreviousValue, rudderCurrentValue);  // compare the values, building an output string based on results
-
+        rudderZAngle = ControlsUtilityMethods.WrapAngle(rudder.GetCurrentRotations().z);  // update the position value
+        GenerateTextDescription("rudder", rudderZAngle);  // Generate a text string for the control surface based on position
         // Ailerons
-        aileronPreviousValue = aileronYAngle;
-        aileronYAngle = WrapAngle(leftAileron.GetCurrentRotations().y);
-        aileronCurrentValue = aileronYAngle;
-        GetAileronPositionChange(aileronPreviousValue, aileronCurrentValue);
-
+        aileronYAngle = ControlsUtilityMethods.WrapAngle(leftAileron.GetCurrentRotations().y);
+        GenerateTextDescription("ailerons", aileronYAngle);
         // Elevators
-        elevatorPreviousValue = elevatorYAngle;
-        elevatorYAngle = WrapAngle(leftElevator.GetCurrentRotations().y);
-        elevatorCurrentValue = elevatorYAngle;
-        GetElevatorPositionChange(elevatorPreviousValue, elevatorCurrentValue);
+        elevatorYAngle = ControlsUtilityMethods.WrapAngle(leftElevator.GetCurrentRotations().y);
+        GenerateTextDescription("elevators", elevatorYAngle);
 
-        TextOutput();
-        
+        TextOutput();  // Method is called to check if another UI component is covering the text box     
     }
 
-    // Generate the string based on control surfaces movement
+    // Method controls when text is displayed on the screen
     private void TextOutput()
     {
-        // If nothing else is visible on screen
-        infoIsVisible = UserInterfaceActions.infoIsVisible;
-        controlsIsVisible = UserInterfaceActions.controlsIsVisible;
-        if (controlsIsVisible || infoIsVisible)
+        // Check to see if any other UI element which covers up the text box is visible
+        infoIsVisible = MenuSystem.infoIsVisible;
+        controlsIsVisible = MenuSystem.controlsIsVisible;
+        if (controlsIsVisible || infoIsVisible)  // If other UI is showing, hide the text description box
         {
-            // Hide text and background if no deflection
-            controlInputDescription.alpha = 0;
-            controlInputDescriptionBackground.enabled = false;
+            controlSurfaceDescriptions.alpha = 0;  // Make text invisible
+            controlInputDescriptionBackground.enabled = false;  // disable background box
         }
-        // If a surface is deflecting, show text to explain what is going on to user
-        else if (SurfaceIsDeflecting()) {
-            controlInputDescription.text =
+        // Check to see if a control surface is deflecting
+        // Text is hidden if no surfaces are deflected. If any are deflected, show text so user 
+        // gets a text description of how the surfaces have moved
+        else if (SurfaceIsDeflecting()) {  // Method returns a boolean value
+            // Use string interpolation to input the content stored in each control surfaces string variable
+            controlSurfaceDescriptions.text =
              $"{elevatorString}\n" +
              $"{aileronString}\n" +
              $"{rudderString}\n";
 
             // show the text and background
-            controlInputDescription.alpha = 1;
+            controlSurfaceDescriptions.alpha = 1;
             controlInputDescriptionBackground.enabled = true;
         }
         else
         {
             // Hide text and background if no deflection
-            controlInputDescription.alpha = 0;
+            controlSurfaceDescriptions.alpha = 0;
             controlInputDescriptionBackground.enabled = false;
         }
     }
 
-    // Function detects if any of the surfaces are currently deflecting, returning a bool
+    // Method detects if any of the surfaces are currently deflecting
     private bool SurfaceIsDeflecting()
     {
-        // If angles are between -1 and 1, then surface is not reflecting
+        // If angles are between -1 and 1, then surface is not deflecting
         if (rudderZAngle > -1 && rudderZAngle < 1 && elevatorYAngle > -1 && elevatorYAngle < 1 && aileronYAngle > -1 && aileronYAngle < 1)
         {
             return false;
         }
-        else
+        else  // Any other values outside -1/1 mean one of the surfaces is deflecting
         {
             return true;
         }   
     }
 
-    private void GetRudderPositionChange(float start, float current)
+    // Method generates the text string for each control surface based on its current rotation value
+    private void GenerateTextDescription(string controlSurface, float currentPosition)
     {
-        if(current > -1 && current < 1)
+        switch (controlSurface)
         {
-            rudderString = "The rudder is in the neutral position";
-        }
-        else if(current > 1)
-        {
-            rudderString = "The rudder is deflecting to the right";
-        }
-        else
-        {
-            rudderString = "The rudder is deflecting to the left";
-        }
-    }
+            case "rudder":
+                if (currentPosition > -1 && currentPosition < 1)
+                {
+                    rudderString = "The rudder is in the neutral position";
+                }
+                else if (currentPosition > 1)
+                {
+                    rudderString = "The rudder is deflecting to the right";
+                }
+                else
+                {
+                    rudderString = "The rudder is deflecting to the left";
+                }
+                break;
 
-    private void GetAileronPositionChange(float start, float current)
-    {
-        if (current > -1 && current < 1)
-        {
-            aileronString = "The elevators are in the neutral position";
-        }
-        else if (current > 1)
-        {
-            aileronString = "Left Aileron is deflecting downwards, right Aileron is deflecting upwards";
-        }
-        else
-        {
-            aileronString = "Left Aileron is deflecting upwards, right Aileron is deflecting downwards";
-        }
-    }
+            case "ailerons":
+                if (currentPosition > -1 && currentPosition < 1)
+                {
+                    aileronString = "The ailerons are in the neutral position";
+                }
+                else if (currentPosition > 1)
+                {
+                    aileronString = "Left Aileron is deflecting downwards, right Aileron is deflecting upwards";
+                }
+                else
+                {
+                    aileronString = "Left Aileron is deflecting upwards, right Aileron is deflecting downwards";
+                }
+                break;
+            case "elevators":
+                if (currentPosition > -1 && currentPosition < 1)
+                {
+                    elevatorString = "The elevators are in the neutral position";
+                }
+                else if (currentPosition > 1)
+                {
+                    elevatorString = "Elevators are deflecting downwards";
+                }
+                else
+                {
+                    elevatorString = "Elevators are deflecting upwards";
+                }
+                break;
 
-    private void GetElevatorPositionChange(float start, float current)
-    {
-        if (current > -1 && current < 1)
-        {
-            elevatorString = "The ailerons are in the neutral position";
+            default:
+                break;
         }
-        else if (current > 1)
-        {
-            elevatorString = "Elevators are deflecting downwards";
-        }
-        else
-        {
-            elevatorString = "Elevators are deflecting upwards";
-        }
-    }
-
-    private float WrapAngle(float angle)
-    {
-        angle %= 360;
-        if (angle > 180)
-            return angle - 360;
-
-        return angle;
     }
 }
