@@ -1,7 +1,5 @@
 ﻿// Script creates the control surface objects and provides methods for them
 
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ControlSurfaces : MonoBehaviour

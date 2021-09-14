@@ -1,46 +1,39 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿// Script controls seperate mouse / touch interactions for the UI  pedals
+// All other mouse controls are handled generically in the ControlsUtilityMethods script
+// Whereby movement to various sliders and the joystick impact control surfaces
+
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
-using UnityEngine.InputSystem;
 
-// Script controls mouse inputs
-
-// All UI Joystick mouse movements are controlled via the ControlsUtilityMethods script, via the update method
-// All UI throttle mouse movements are controlled via the Throttle.cs script
-
-public class MouseControls : MonoBehaviour // Intefaces to interact with the Unity event system
+public class MouseControls : MonoBehaviour 
 {
+    // Access to the pedal buttons which control the rudder
     private Button leftPedal;
     private Button rightPedal;
 
-    private float mouseDegrees = 20f;  // number of degrees to move a surface on keyboard press
+    private const float MOUSE_DEGREES = 20f;  // number of degrees to move a surface on keyboard press
 
     void Awake()
     {
+        // Store the pedal button references inside the varaibles
         leftPedal = GameObject.Find("L_Pedal").GetComponent<Button>();
         rightPedal = GameObject.Find("R_Pedal").GetComponent<Button>();
     }
 
-    public void OnLeftPedalDown()
+    public void OnLeftPedalDown()  // Move left pedal down and right pedal up - movement controlled by PedalDown method
     {
-            ControlsUtilityMethods.PedalDown(leftPedal, mouseDegrees);
+            ControlsUtilityMethods.PedalDown(leftPedal, MOUSE_DEGREES);
             ControlsUtilityMethods.PedalUp(rightPedal);
     }
 
-    public void OnRightPedalDown()
+    public void OnRightPedalDown()  // Move right pedal down and left pedal up - movement controlled by PedalDown method
     {
-            ControlsUtilityMethods.PedalDown(rightPedal, mouseDegrees);
+            ControlsUtilityMethods.PedalDown(rightPedal, MOUSE_DEGREES);
             ControlsUtilityMethods.PedalUp(leftPedal);
     }
 
-    public void OnPointerUp()
+    public void OnPointerUp()  // When mouse no longer clicking, move both pedals back up
     {
         ControlsUtilityMethods.PedalBothUp();
     }
-
-    // Joystick Controls, based on joysticks current user moved location
-
-
 }

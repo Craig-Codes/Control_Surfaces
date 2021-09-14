@@ -1,8 +1,6 @@
 ﻿// Script controls the Aircraft 3D model movement
 // Movement is based on the position of each control surface (axis) at each frame, moving the aircraft based on control surface deflection
 
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;  // Gives access to the Slider datatype
 

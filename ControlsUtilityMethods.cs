@@ -3,7 +3,6 @@
 // Allows methods to be called from other scripts without the need to get object references in each individual script
 // A Static class is not instantiated, so no reference to this class needs to be stored in individal scripts to use the methods
 
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine;

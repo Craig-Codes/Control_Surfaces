@@ -1,11 +1,7 @@
 ﻿// Script controls keyboard interactions for the UI throttle, flaps, pedals and Joystick
 
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
-using UnityEngine.InputSystem;
 
 public class KeyboardControls : MonoBehaviour
 {

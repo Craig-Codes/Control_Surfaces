@@ -3,12 +3,10 @@
 // to ensure there is only one reference to objects, not a new reference for each time the script is used
 // This ensures variables (especially booleans) have one instance shared across all scripts
 
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using UnityEngine.SceneManagement;
 using TMPro;
 
 public class MenuSystem : MonoBehaviour
@@ -472,7 +470,7 @@ public class MenuSystem : MonoBehaviour
     {
         currentSelected = EventSystem.current.currentSelectedGameObject;  // Get the selected button name
 
-        switch (currentSelected.name)
+        switch (currentSelected.name)  // When case matches button selection, do the following functions
         {
             case "Reset_Button":
                 OnMouseClickReset();
@@ -508,7 +506,7 @@ public class MenuSystem : MonoBehaviour
     {
         ToggleUiButtons(); // ensure the UI button list is currently correct
         menuCounter++;  // add one to menuCounter
-        // if counter is higher than current avalaible list entries, reset counter number to avoid errors
+        // if counter is higher than current avaliable list entries, reset counter number to avoid errors
         if (menuCounter >= uiButtons.Count)  
         {
             menuCounter = 0;
