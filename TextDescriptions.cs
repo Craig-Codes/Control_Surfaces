@@ -145,11 +145,11 @@ public class TextDescriptions : MonoBehaviour
                 }
                 else if (currentPosition > 1)
                 {
-                    rudderString = "Rudder deflecting to the Right - Yaw Right";
+                    rudderString = "Rudder deflecting left - Yaw Left";
                 }
                 else
                 {
-                    rudderString = "Rudder deflecting to the left - Yaw Left";
+                    rudderString = "Rudder deflecting right - Yaw Right";
                 }
                 break;
 
@@ -170,7 +170,7 @@ public class TextDescriptions : MonoBehaviour
             case "elevators":
                 if (currentPosition > -1 && currentPosition < 1)
                 {
-                    elevatorString = "Elevators in neutral position - No Nose Pitch";
+                    elevatorString = "Elevators in neutral position - No Pitch";
                 }
                 else if (currentPosition > 1)
                 {
