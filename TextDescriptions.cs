@@ -141,44 +141,44 @@ public class TextDescriptions : MonoBehaviour
             case "rudder":
                 if (currentPosition > -1 && currentPosition < 1)
                 {
-                    rudderString = "The rudder is in the neutral position";
+                    rudderString = "Rudder in neutral position - No Yaw";
                 }
                 else if (currentPosition > 1)
                 {
-                    rudderString = "The rudder is deflecting to the right";
+                    rudderString = "Rudder deflecting to the Right - Yaw Right";
                 }
                 else
                 {
-                    rudderString = "The rudder is deflecting to the left";
+                    rudderString = "Rudder deflecting to the left - Yaw Left";
                 }
                 break;
 
             case "ailerons":
                 if (currentPosition > -1 && currentPosition < 1)
                 {
-                    aileronString = "The ailerons are in the neutral position";
+                    aileronString = "Ailerons in neutral position - No Roll";
                 }
                 else if (currentPosition > 1)
                 {
-                    aileronString = "Left Aileron is deflecting downwards, right Aileron is deflecting upwards";
+                    aileronString = "Left Aileron down, right Aileron up - Roll Right";
                 }
                 else
                 {
-                    aileronString = "Left Aileron is deflecting upwards, right Aileron is deflecting downwards";
+                    aileronString = "Left Aileron up, right Aileron down - Roll Left";
                 }
                 break;
             case "elevators":
                 if (currentPosition > -1 && currentPosition < 1)
                 {
-                    elevatorString = "The elevators are in the neutral position";
+                    elevatorString = "Elevators in neutral position - No Nose Pitch";
                 }
                 else if (currentPosition > 1)
                 {
-                    elevatorString = "Elevators are deflecting downwards";
+                    elevatorString = "Elevators deflecting down - Nose Pitches Down";
                 }
                 else
                 {
-                    elevatorString = "Elevators are deflecting upwards";
+                    elevatorString = "Elevators deflecting up - Nose Pitches Up";
                 }
                 break;
 
