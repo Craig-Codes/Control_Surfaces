@@ -1,5 +1,6 @@
-﻿// Script provides the caption box at the bottom of the UI allowing trainees to read
-// which control surfaces are being defelected based on which controls are being used
+﻿/* Script provides the caption box at the bottom of the UI allowing trainees
+to read which control surfaces are being defelected and how based on which 
+controls are being used */
 
 using System.Collections;
 using System.Collections.Generic;
@@ -9,81 +10,87 @@ using UnityEngine.UI;
 
 public class TextDescriptions : MonoBehaviour
 {
-    // Reference to the Text box and its background, used to display the current aircraft state
+    // Reference to the caption box and its background
     private TextMeshProUGUI controlSurfaceDescriptions;
     private Image controlInputDescriptionBackground;
 
-    // Variables from MenuSystem.cs script - provide access to static properties
-    // Booleans used to determine if any other UI is displayed over the top of the text descriptions
-    // allowing the text discription to be hidden
-    private bool infoIsVisible;  
+    /* Variables from MenuSystem.cs script provide access to static 
+    properties. Booleans used to determine if any other UI is displayed 
+    over the top of the text descriptions allowing the text discription
+    to be hidden */
+    private bool infoIsVisible;
     private bool controlsIsVisible;
 
-    // Reference to control surface objects 
-    // Variables used to read the state / deflection of each control surface
+    /* Reference to control surface objects Variables used to read the 
+    deflection of each control surface */
     ControlSurfaces.Rudder rudder;
     ControlSurfaces.Surface leftAileron;
     ControlSurfaces.Surface leftElevator;
 
-    // Control surface capture vars, store references to the current positions of each surface
-    // Rudder
+    // Store references to the current positions of each surface
     private float rudderZAngle;
-    private string rudderString;  // variable stores the current text description of the rudder surface position
-    // Ailerons
+    // variable stores the current text description of the surface position
+    private string rudderString;
     private float aileronYAngle;
-    private string aileronString;  
-    // Elevators
+    private string aileronString;
     private float elevatorYAngle;
-    private string elevatorString;  
+    private string elevatorString;
 
     // Start is called before the first frame update
     void Start()
     {
-        // Get references to the control surface objects
+        // Add references to the control surface objects
         rudder = ControlSurfaces.rudder;
         leftAileron = ControlSurfaces.leftAileron;
         leftElevator = ControlSurfaces.leftElevator;
 
         // Get the relevant start angles for each surface
-        rudderZAngle = ControlsUtilityMethods.WrapAngle(rudder.GetCurrentRotations().z);
-        aileronYAngle = ControlsUtilityMethods.WrapAngle(leftAileron.GetCurrentRotations().y);
-        elevatorYAngle = ControlsUtilityMethods.WrapAngle(leftElevator.GetCurrentRotations().y);
+        rudderZAngle =
+            ControlsUtilityMethods.WrapAngle(rudder.GetCurrentRotations().z);
+        aileronYAngle =
+            ControlsUtilityMethods.WrapAngle(leftAileron.GetCurrentRotations().y);
+        elevatorYAngle =
+            ControlsUtilityMethods.WrapAngle(leftElevator.GetCurrentRotations().y);
 
-        // Get the TextMeshPro via code. This text area is where description text is shown to the user
+        /* Get the TextMeshPro via code. This text area is where description
+        text is shown to the user */
         var textArray = FindObjectsOfType<TextMeshProUGUI>();
         foreach (var element in textArray)  // loop through all text mesh pro objects
         {
             if (element.tag == "ControlsDescription")
-            {   // If the object is tagged as "ControlsDescription" the reference is then stored in the variable
-                // allowing us to print directly into the text box through code
+            {   /* If the object is tagged as "ControlsDescription" the reference is stored
+            in the variable allowing us to print directly into the text box through code */
                 controlSurfaceDescriptions = element;
             }
         }
 
-        // Get the UI text box background, enabling us to show ans hide it when required
-        controlInputDescriptionBackground = GameObject.Find("ControlsDescriptionBackground").GetComponent<Image>();
+        // Get the UI text box background, enabling us to show and hide it 
+        controlInputDescriptionBackground =
+            GameObject.Find("ControlsDescriptionBackground").GetComponent<Image>();
 
         // Store initial values of MenuSystem script booleans
         infoIsVisible = MenuSystem.infoIsVisible;
         controlsIsVisible = MenuSystem.controlsIsVisible;
     }
 
-    // Update is called once per frame
-    // Each frame the update method is used to determin the current position of each
-    // control surface, updating the text box with the correct user information
+    /* Update is called once per frame Each frame the update method is used to
+    determine the current position of each control surface, updating the text
+    box with the correct user information */
     void Update()
     {
-        // Rudder 
-        rudderZAngle = ControlsUtilityMethods.WrapAngle(rudder.GetCurrentRotations().z);  // update the position value
-        GenerateTextDescription("rudder", rudderZAngle);  // Generate a text string for the control surface based on position
-        // Ailerons
-        aileronYAngle = ControlsUtilityMethods.WrapAngle(leftAileron.GetCurrentRotations().y);
+        // update the position value
+        rudderZAngle =
+            ControlsUtilityMethods.WrapAngle(rudder.GetCurrentRotations().z);
+        // Generate a text string for the control surface based on position
+        GenerateTextDescription("rudder", rudderZAngle);
+        aileronYAngle =
+            ControlsUtilityMethods.WrapAngle(leftAileron.GetCurrentRotations().y);
         GenerateTextDescription("ailerons", aileronYAngle);
-        // Elevators
-        elevatorYAngle = ControlsUtilityMethods.WrapAngle(leftElevator.GetCurrentRotations().y);
+        elevatorYAngle =
+            ControlsUtilityMethods.WrapAngle(leftElevator.GetCurrentRotations().y);
         GenerateTextDescription("elevators", elevatorYAngle);
-
-        TextOutput();  // Method is called to check if another UI component is covering the text box     
+        // Method is called to check if another UI component is covering the text box 
+        TextOutput();
     }
 
     // Method controls when text is displayed on the screen
@@ -92,16 +99,19 @@ public class TextDescriptions : MonoBehaviour
         // Check to see if any other UI element which covers up the text box is visible
         infoIsVisible = MenuSystem.infoIsVisible;
         controlsIsVisible = MenuSystem.controlsIsVisible;
-        if (controlsIsVisible || infoIsVisible)  // If other UI is showing, hide the text description box
+        // If other UI is showing, hide the text description box
+        if (controlsIsVisible || infoIsVisible)
         {
             controlSurfaceDescriptions.alpha = 0;  // Make text invisible
             controlInputDescriptionBackground.enabled = false;  // disable background box
         }
-        // Check to see if a control surface is deflecting
-        // Text is hidden if no surfaces are deflected. If any are deflected, show text so user 
-        // gets a text description of how the surfaces have moved
-        else if (SurfaceIsDeflecting()) {  // Method returns a boolean value
-            // Use string interpolation to input the content stored in each control surfaces string variable
+        /* Check to see if a control surface is deflecting. Text is hidden if no
+        surfaces are deflected. If any are deflected, show text so user gets
+        a text description of how the surfaces have moved */
+        else if (SurfaceIsDeflecting())
+        {  /* Method returns a boolean value
+            Use string interpolation to output the content stored in each
+            control surfaces string variable */
             controlSurfaceDescriptions.text =
              $"{elevatorString}\n" +
              $"{aileronString}\n" +
@@ -123,17 +133,23 @@ public class TextDescriptions : MonoBehaviour
     private bool SurfaceIsDeflecting()
     {
         // If angles are between -1 and 1, then surface is not deflecting
-        if (rudderZAngle > -1 && rudderZAngle < 1 && elevatorYAngle > -1 && elevatorYAngle < 1 && aileronYAngle > -1 && aileronYAngle < 1)
+        if (rudderZAngle > -1
+            && rudderZAngle < 1
+            && elevatorYAngle > -1
+            && elevatorYAngle < 1
+            && aileronYAngle > -1
+            && aileronYAngle < 1)
         {
             return false;
         }
         else  // Any other values outside -1/1 mean one of the surfaces is deflecting
         {
             return true;
-        }   
+        }
     }
 
-    // Method generates the text string for each control surface based on its current rotation value
+    /* Method generates the text string for each control surface based on its
+    current rotation value */
     private void GenerateTextDescription(string controlSurface, float currentPosition)
     {
         switch (controlSurface)
@@ -160,11 +176,11 @@ public class TextDescriptions : MonoBehaviour
                 }
                 else if (currentPosition > 1)
                 {
-                    aileronString = "Left Aileron down, right Aileron up - Roll Right";
+                    aileronString = "Left Aileron up, right Aileron down - Roll Left";
                 }
                 else
                 {
-                    aileronString = "Left Aileron up, right Aileron down - Roll Left";
+                    aileronString = "Right Aileron up, left Aileron down - Roll Right";
                 }
                 break;
             case "elevators":
